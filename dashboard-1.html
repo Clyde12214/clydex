@@ -532,10 +532,10 @@ async function handleCallback() {
 
   } catch (e) {
     // Demo fallback: if no real client_id, show the dashboard in demo mode
-    if (CONFIG.clientId === 'YOUR_CLIENT_ID') {
+    if (CONFIG.clientId === '131826') {
       sessionStorage.removeItem('pkce_verifier');
       sessionStorage.removeItem('oauth_state');
-      window.history.replaceState({}, '', '/dashboard.html');
+      window.history.replaceState({}, '', 'https://Clyde.netlify.app/dashboard.html');
       setLoaderMsg('Loading demo mode…');
       setTimeout(()=>launchDemoMode(), 800);
     } else {
