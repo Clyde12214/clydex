@@ -3,76 +3,219 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ClydeX - Trade Smarter</title>
+    <title>ClydeX - Professional Trading Suite</title>
     <style>
-        :root { --accent: #00fff2; --bg: #0b1426; }
-        body { margin: 0; background: var(--bg); color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
-        
-        .loader-container { text-align: center; width: 100%; padding: 20px; }
-        
-        /* The Circular Progress from your image */
-        .circular-progress { 
-            width: 160px; height: 160px; border-radius: 50%; 
-            background: conic-gradient(var(--accent) 0%, #222 0%); 
-            display: flex; align-items: center; justify-content: center; margin: 0 auto 30px;
-            box-shadow: 0 0 20px rgba(0, 255, 242, 0.2);
-            position: relative;
-        }
-        .inner-circle { width: 140px; height: 140px; background: var(--bg); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .percent-num { font-size: 32px; font-weight: 900; color: var(--accent); }
-        .loading-text { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; margin-top: 5px; color: #848e9c; }
+        :root { --deriv-red: #ff444f; --dark-bg: #0e1117; --card-bg: #1c1f26; --green: #00c853; --gray: #848e9c; }
+        body { margin: 0; background: var(--dark-bg); color: white; font-family: 'Inter', sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        h1 { font-size: 28px; letter-spacing: 4px; margin: 10px 0; font-weight: 900; }
-        .tagline { color: #848e9c; font-size: 12px; letter-spacing: 1px; margin-bottom: 40px; }
+        /* Header Area */
+        header { background: #15171f; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #2d3139; }
+        .logo { font-weight: 900; font-size: 22px; color: var(--deriv-red); letter-spacing: 2px; }
+        .balance-box { background: #252932; padding: 6px 15px; border-radius: 4px; font-weight: bold; border: 1px solid #3e4450; color: var(--green); font-size: 14px; }
 
-        /* Small badges matching the DB Traders style */
-        .badge-row { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; opacity: 0.6; }
-        .badge { background: rgba(255,255,255,0.1); padding: 5px 12px; border-radius: 20px; font-size: 9px; border: 1px solid rgba(255,255,255,0.1); }
+        /* Navigation Bar (Video Style) */
+        nav { display: flex; background: #15171f; border-bottom: 1px solid #2d3139; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .tab { padding: 14px 22px; cursor: pointer; color: var(--gray); font-size: 12px; font-weight: 600; white-space: nowrap; transition: 0.3s; border-bottom: 3px solid transparent; }
+        .tab.active { color: white; border-bottom: 3px solid var(--deriv-red); background: rgba(255, 68, 79, 0.08); }
+
+        /* Main Content Sections */
+        .section { flex: 1; overflow-y: auto; display: none; padding: 15px; }
+        .section.active { display: block; }
+
+        /* UI Components */
+        .card { background: var(--card-bg); border-radius: 12px; padding: 18px; margin-bottom: 15px; border: 1px solid #2d3139; }
+        .stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
+        .stat-item { background: #13151b; padding: 12px; border-radius: 8px; text-align: center; border: 1px solid #2d3139; }
+        
+        .btn-action { background: var(--deriv-red); color: white; border: none; width: 100%; padding: 14px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px; }
+        .btn-stop { background: #444; margin-top: 10px; }
+        
+        input { width: 100%; padding: 12px; background: #13151b; border: 1px solid #3e4450; color: white; border-radius: 4px; margin-top: 8px; box-sizing: border-box; }
+        .logs { background: #000; height: 120px; border-radius: 6px; padding: 10px; font-family: monospace; font-size: 11px; overflow-y: auto; color: #00ff00; margin-top: 15px; border: 1px solid #2d3139; }
+
+        iframe { width: 100%; height: 85vh; border: none; border-radius: 8px; }
     </style>
 </head>
 <body>
 
-<div class="loader-container">
-    <div class="circular-progress" id="progress">
-        <div class="inner-circle">
-            <div class="percent-num" id="percentText">0</div>
-            <div class="loading-text">Loading</div>
-        </div>
-    </div>
-    
-    <h1>ClydeX</h1>
-    <p class="tagline">TRADE SMARTER. EXECUTE FASTER.</p>
+<header>
+    <div class="logo">CLYDEX</div>
+    <div class="balance-box" id="userBalance">LOG IN REQUIRED</div>
+</header>
 
-    <div class="badge-row">
-        <div class="badge">🤖 AI Bots</div>
-        <div class="badge">📊 Analysis Tool</div>
-        <div class="badge">⚡ Speed Bot</div>
+<nav id="nav">
+    <div class="tab active" onclick="openSection(event, 'home')">DASHBOARD</div>
+    <div class="tab" onclick="openSection(event, 'bot_tab')">AUTO BOTS</div>
+    <div class="tab" onclick="openSection(event, 'chart_tab')">CHARTS</div>
+    <div class="tab" onclick="openSection(event, 'analysis_tab')">SIGNAL SCANNER</div>
+</nav>
+
+<div id="home" class="section active">
+    <div class="card">
+        <h3 id="accountID">Welcome to ClydeX</h3>
+        <p style="color: var(--gray); font-size: 12px;">Earn commissions by trading on the global market.</p>
+        <button class="btn-action" onclick="login()">CONNECT DERIV ACCOUNT</button>
+        <p style="font-size:10px; color:var(--gray); margin-top:10px; text-align:center;">Secured via App ID: 131826</p>
+    </div>
+</div>
+
+<div id="bot_tab" class="section">
+    <div class="card">
+        <h4 style="margin:0;">Volatility 100 (1s) - Even/Odd Bot</h4>
+        <div class="stat-row">
+            <div class="stat-item"><small>Wins</small><div id="wins" style="color:var(--green); font-size:18px;">0</div></div>
+            <div class="stat-item"><small>Losses</small><div id="losses" style="color:var(--deriv-red); font-size:18px;">0</div></div>
+        </div>
+        <label style="font-size:11px; color:var(--gray);">STAKE AMOUNT ($)</label>
+        <input type="number" id="stake" value="0.35">
+        <button id="startBtn" class="btn-action" style="margin-top:15px;" onclick="toggleBot()">START AUTO-TRADING</button>
+        <div class="logs" id="botLogs">SYSTEM: Waiting for authorization...</div>
+    </div>
+</div>
+
+<div id="chart_tab" class="section" style="padding:0;">
+    <iframe src="https://tradingview.deriv.com/v1/main.html"></iframe>
+</div>
+
+<div id="analysis_tab" class="section">
+    <div class="card">
+        <h4>Market Sentiment (Last 50 Ticks)</h4>
+        <div id="analysisFeed" style="font-family:monospace; font-size:13px; line-height:1.6;">
+            Calculating probability...
+        </div>
     </div>
 </div>
 
 <script>
-    let progress = 0;
-    const progressCircle = document.getElementById('progress');
-    const percentText = document.getElementById('percentText');
+    const APP_ID = '131826';
+    const PARTNER_TOKEN = 'E941D587-FB92-4272-8FD5-A662EBEDEE4C';
+    const REDIRECT_URL = window.location.href.split('?')[0];
+    
+    let ws = new WebSocket(`wss://ws.binaryws.com/websockets/v3?app_id=${APP_ID}`);
+    let isRunning = false;
+    let currentStake = 0.35;
+    let winCount = 0;
+    let lossCount = 0;
+    let userToken = "";
 
-    // Simulate the loading percentage
-    const interval = setInterval(() => {
-        progress += 1;
-        percentText.innerText = progress;
-        progressCircle.style.background = `conic-gradient(#00fff2 ${progress}%, #222 0deg)`;
+    function openSection(evt, name) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.getElementById(name).classList.add('active');
+        evt.currentTarget.classList.add('active');
+    }
+
+    function login() {
+        window.location.href = `https://oauth.deriv.com/oauth2/authorize?app_id=${APP_ID}&l=en&brand=deriv&affiliate_token=${PARTNER_TOKEN}&redirect_uri=${REDIRECT_URL}`;
+    }
+
+    // Initialize Connection
+    document.addEventListener("DOMContentLoaded", () => {
+        const params = new URLSearchParams(window.location.search);
+        userToken = params.get('token1') || localStorage.getItem('clydex_token');
         
-        if (progress >= 100) {
-            clearInterval(interval);
-            // After 100%, trigger the Deriv OAuth Login
-            setTimeout(redirectToDeriv, 500);
+        if (userToken) {
+            localStorage.setItem('clydex_token', userToken);
+            window.history.replaceState({}, document.title, window.location.pathname);
+            connect();
         }
-    }, 40);
+    });
 
-    function redirectToDeriv() {
-        const appId = '131826'; 
-        const redirectUrl = encodeURIComponent('https://clyde12214.github.io/clydex/dashboard.html');
-        // This takes the user to the official "Approve Application" screen
-        window.location.href = `https://oauth.deriv.com/oauth2/authorize?app_id=${appId}&l=en&brand=deriv&redirect_uri=${redirectUrl}`;
+    function connect() {
+        ws.onopen = () => ws.send(JSON.stringify({ authorize: userToken }));
+        
+        ws.onmessage = (msg) => {
+            const data = JSON.parse(msg.data);
+            
+            if (data.msg_type === 'authorize') {
+                document.getElementById('accountID').innerText = "Account: " + data.authorize.loginid;
+                ws.send(JSON.stringify({ balance: 1, subscribe: 1 }));
+                ws.send(JSON.stringify({ ticks: 'R_100', subscribe: 1 }));
+            }
+            
+            if (data.msg_type === 'balance') {
+                document.getElementById('userBalance').innerText = data.balance.currency + " " + data.balance.balance;
+            }
+
+            if (data.msg_type === 'tick') {
+                updateAnalysis(data.tick.quote);
+            }
+
+            if (data.msg_type === 'proposal_open_contract' && data.proposal_open_contract.is_sold) {
+                handleBotResult(data.proposal_open_contract);
+            }
+        };
+    }
+
+    // Bot Execution Logic
+    function toggleBot() {
+        if (!userToken) return alert("Please log in first!");
+        isRunning = !isRunning;
+        const btn = document.getElementById('startBtn');
+        if (isRunning) {
+            btn.innerText = "STOP BOT";
+            btn.style.background = "#444";
+            currentStake = parseFloat(document.getElementById('stake').value);
+            addLog("Bot Started - Analyzing Patterns...");
+            executeTrade();
+        } else {
+            btn.innerText = "START AUTO-TRADING";
+            btn.style.background = "var(--deriv-red)";
+            addLog("Bot Stopped.");
+        }
+    }
+
+    function executeTrade() {
+        if (!isRunning) return;
+        ws.send(JSON.stringify({
+            buy: 1, price: currentStake,
+            parameters: {
+                amount: currentStake, basis: "stake", contract_type: "DIGITEVEN",
+                currency: "USD", duration: 1, duration_unit: "t", symbol: "R_100"
+            },
+            subscribe: 1
+        }));
+    }
+
+    function handleBotResult(contract) {
+        if (contract.status === 'won') {
+            winCount++;
+            document.getElementById('wins').innerText = winCount;
+            currentStake = parseFloat(document.getElementById('stake').value);
+            addLog(`WIN: +$${contract.profit}`);
+        } else {
+            lossCount++;
+            document.getElementById('losses').innerText = lossCount;
+            currentStake *= 2.1; // Martingale
+            addLog(`LOSS: Martingale Stake $${currentStake.toFixed(2)}`);
+        }
+        if (isRunning) setTimeout(executeTrade, 2000);
+    }
+
+    // Analysis Tool Logic
+    let ticks = [];
+    function updateAnalysis(quote) {
+        const lastDigit = quote.toString().slice(-1);
+        ticks.push(parseInt(lastDigit));
+        if (ticks.length > 50) ticks.shift();
+        
+        const evens = ticks.filter(n => n % 2 === 0).length;
+        const odds = ticks.length - evens;
+        const evenPct = ((evens / ticks.length) * 100).toFixed(0);
+        
+        document.getElementById('analysisFeed').innerHTML = `
+            <div style="margin-bottom:10px;">Even Density: <b style="color:var(--green)">${evenPct}%</b></div>
+            <div style="height:10px; background:#444; border-radius:5px;">
+                <div style="width:${evenPct}%; height:100%; background:var(--green); border-radius:5px;"></div>
+            </div>
+            <p style="font-size:11px; color:var(--gray); margin-top:10px;">Recommended: ${evenPct > 55 ? 'TRADE EVEN' : 'WAIT FOR TREND'}</p>
+        `;
+    }
+
+    function addLog(msg) {
+        const logger = document.getElementById('botLogs');
+        logger.innerHTML += `<div>[${new Date().toLocaleTimeString()}] ${msg}</div>`;
+        logger.scrollTop = logger.scrollHeight;
     }
 </script>
 </body>
