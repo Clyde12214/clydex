@@ -1,17 +1,49 @@
-<style>
-  .loader-container { background: radial-gradient(circle, #1a2a6c, #b21f1f, #fdbb2d); height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
-  .circular-progress { width: 150px; height: 150px; border-radius: 50%; background: conic-gradient(#00fff2 32%, #333 0deg); display: flex; align-items: center; justify-content: center; position: relative; }
-  .inner-circle { width: 130px; height: 130px; background: #0b1426; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; }
-</style>
-<div class="loader-container">
-  <div class="circular-progress">
-    <div class="inner-circle">32%</div>
-  </div>
-  <h2 style="margin-top:20px;">ClydeX</h2>
-  <p>TRADE SMARTER. EXECUTE FASTER.</p>
-</div>
-<script>
-  // Redirect to Deriv login after 3 seconds
-  setTimeout(() => { window.location.href = "https://oauth.deriv.com/oauth2/authorize?app_id=YOUR_APP_ID"; }, 3000);
-</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClydeX - Authorize</title>
+    <style>
+        :root { --accent: #00fff2; --bg: #0b1426; }
+        body { margin: 0; background: var(--bg); color: white; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; }
+        .loader-container { text-align: center; }
+        .circular-progress { 
+            width: 150px; height: 150px; border-radius: 50%; 
+            background: conic-gradient(var(--accent) 0%, #222 0%); 
+            display: flex; align-items: center; justify-content: center; margin-bottom: 20px;
+        }
+        .inner-circle { width: 130px; height: 130px; background: var(--bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: bold; color: var(--accent); }
+    </style>
+</head>
+<body>
+    <div class="loader-container">
+        <div class="circular-progress" id="progress"><div class="inner-circle" id="percentText">0%</div></div>
+        <h1 style="letter-spacing:4px;">CLYDEX</h1>
+        <p style="color: #848e9c; font-size: 12px;">SECURE PARTNER CONNECTION...</p>
+    </div>
 
+    <script>
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress++;
+            document.getElementById('percentText').innerText = progress + "%";
+            document.getElementById('progress').style.background = `conic-gradient(#00fff2 ${progress}%, #222 0deg)`;
+            if (progress >= 100) {
+                clearInterval(interval);
+                redirectToDeriv();
+            }
+        }, 30);
+
+        function redirectToDeriv() {
+            const appId = '131826';
+            const affiliateToken = 'E941D587-FB92-4272-8FD5-A662EBEDEE4C'; // YOUR TOKEN
+            const source = 'CU21191'; // YOUR SOURCE ID
+            const redirectUri = encodeURIComponent('https://clyde12214.github.io/clydex/dashboard.html');
+            
+            // This URL tells Deriv to give YOU the commission for this user
+            window.location.href = `https://oauth.deriv.com/oauth2/authorize?app_id=${appId}&l=en&brand=deriv&affiliate_token=${affiliateToken}&utm_source=${source}&redirect_uri=${redirectUri}`;
+        }
+    </script>
+</body>
+</html>
