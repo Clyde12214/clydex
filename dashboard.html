@@ -4,162 +4,118 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>ClydeX Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
 <style>
 :root{
-  --bg:#05070a;--surface:#0b1018;--surface2:#111922;
-  --border:#16202e;--accent:#00ffc2;--accent2:#ff3d5a;
-  --accent3:#ffc53d;--text:#e8f0f8;--muted:#4a6278;
-  --up:#00ffc2;--down:#ff3d5a;
+  --bg:#05070a;--surface:#0b1018;--border:#16202e;--accent:#00ffc2;--text:#e8f0f8;--muted:#4a6278;
   --mono:'DM Mono',monospace;--head:'Syne',sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:12px;min-height:100vh;overflow-x:hidden;}
+body{background:var(--bg);color:var(--text);font-family:var(--mono);display:flex;flex-direction:column;height:100vh;overflow:hidden;}
 
-/* Layout */
-#loading{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
-#loading.gone{display:none;}
-header{display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:48px;border-bottom:1px solid var(--border);background:var(--surface);position:sticky;top:0;z-index:50;}
-main{display:none;grid-template-columns:1fr 320px;gap:1px;background:var(--border);min-height:calc(100vh - 48px);}
+/* Top Header */
+header{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:50px;border-bottom:1px solid var(--border);background:var(--surface);}
+.hlogo{font-family:var(--head);font-weight:800;font-size:20px;}
+.hlogo em{color:var(--accent);font-style:normal;}
+.hbal{background:rgba(0,255,194,0.1);border:1px solid var(--accent);padding:5px 15px;border-radius:4px;color:var(--accent);font-weight:700;}
 
-/* Components */
-.chart-box{background:var(--bg);padding:20px;display:flex;flex-direction:column;gap:16px;}
-.sidebar{background:var(--surface);padding:20px;display:flex;flex-direction:column;gap:20px;}
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(120px, 1fr));gap:12px;}
-.stat-card{background:var(--surface2);border:1px solid var(--border);padding:12px;border-radius:8px;}
-.stat-val{font-family:var(--head);font-size:18px;font-weight:700;color:var(--accent);margin-top:4px;}
-.hbal{background:rgba(0,255,194,0.08);border:1px solid rgba(0,255,194,0.15);border-radius:5px;padding:5px 12px;font-family:var(--head);font-size:13px;font-weight:700;color:var(--accent);}
+/* App Navbar (The one from your image) */
+.app-navbar{display:flex;background:var(--surface);border-bottom:1px solid var(--border);height:40px;overflow-x:auto;align-items:center;padding:0 10px;gap:15px;}
+.nav-item{color:var(--muted);text-decoration:none;font-size:10px;text-transform:uppercase;white-space:nowrap;padding:5px 8px;}
+.nav-item.active{color:var(--accent);border-bottom:2px solid var(--accent);}
 
-/* Digit Analysis Grid */
-.digit-grid{display:grid;grid-template-columns:repeat(5, 1fr);gap:8px;margin-top:10px;}
-.digit-box{background:var(--surface2);border:1px solid var(--border);padding:10px;text-align:center;border-radius:4px;}
-.digit-num{font-weight:700;font-size:14px;color:var(--muted);}
-.digit-pct{font-size:10px;color:var(--accent);margin-top:2px;}
+/* Main Content */
+main{display:none;flex:1;grid-template-columns:1fr 300px;}
+.chart-area{padding:20px;display:flex;flex-direction:column;gap:15px;}
+.sidebar{background:var(--surface);border-left:1px solid var(--border);padding:20px;}
+.digit-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px;}
+.digit-box{background:var(--bg);border:1px solid var(--border);padding:10px;display:flex;justify-content:space-between;border-radius:4px;}
+
+#loading{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:99;}
 </style>
 </head>
 <body>
-
-<div id="loading">
-  <div style="font-family:var(--head);font-size:24px;font-weight:800;">Clyde<em>X</em></div>
-  <div id="lmsg">Initializing Trading Interface...</div>
-</div>
-
-<header id="app-header" style="display:none;">
-  <div style="font-family:var(--head);font-weight:800;font-size:18px;">Clyde<em>X</em></div>
+<div id="loading">Initializing...</div>
+<header id="app-header" style="display:none">
+  <div class="hlogo">Clyde<em>X</em></div>
   <div id="hbal" class="hbal">0.00 USD</div>
 </header>
-
+<nav class="app-navbar" id="app-nav" style="display:none">
+  <a href="#" class="nav-item active">Dashboard</a>
+  <a href="#" class="nav-item">YouTube Live</a>
+  <a href="#" class="nav-item">Free Bots</a>
+  <a href="#" class="nav-item">Bot Builder</a>
+  <a href="#" class="nav-item">Analysis Tools</a>
+</nav>
 <main id="app-main">
-  <div class="chart-box">
-    <div class="stats-grid">
-      <div class="stat-card"><div>Last Tick</div><div id="last-tick" class="stat-val">0.0000</div></div>
-      <div class="stat-card"><div>Symbol</div><div class="stat-val">R_100</div></div>
-    </div>
-    <div id="chart-container" style="flex:1; background:var(--surface2); border-radius:12px; border:1px solid var(--border); display:flex; align-items:center; justify-content:center; color:var(--muted);">
-       [ Chart Visualizer Ready ]
-    </div>
+  <div class="chart-area">
+    <div id="last-tick" style="font-size:24px;color:var(--accent)">0.0000</div>
+    <div style="flex:1;background:#000;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--muted)">Chart Area</div>
   </div>
-
   <div class="sidebar">
-    <h3>Digit Analysis (100)</h3>
-    <div class="digit-grid" id="digit-display">
-      </div>
-    <hr style="border:0; border-top:1px solid var(--border); margin:10px 0;">
-    <div class="stat-card">
-      <div>Account ID</div>
-      <div id="hname" style="font-size:11px; margin-top:5px; color:var(--muted);">Checking...</div>
-    </div>
+    <h3>Digit Analysis</h3>
+    <div class="digit-grid" id="digits"></div>
+    <div id="hname" style="margin-top:20px;font-size:11px;color:var(--muted)">Account: ...</div>
   </div>
 </main>
 
 <script>
 const APP_ID = '131826';
 const WS_URL = 'wss://ws.binaryws.com/websockets/v3?app_id=' + APP_ID;
-let ws;
-let activeToken;
-let digitCounts = Array(10).fill(0);
-let totalTicks = 0;
+let ws, activeToken;
+let ticks = [];
 
 function boot() {
-  const params = new URLSearchParams(window.location.search);
-  let accts = [];
-  let i = 1;
-
-  while (params.get('acct' + i)) {
-    accts.push({ token: params.get('token' + i), acct: params.get('acct' + i) });
-    i++;
-  }
-
-  if (accts.length > 0) {
-    activeToken = accts[0].token;
+  const p = new URLSearchParams(window.location.search);
+  if(p.get('token1')){
+    activeToken = p.get('token1');
     sessionStorage.setItem('dx_token', activeToken);
-    window.history.replaceState({}, '', window.location.pathname);
+    window.history.replaceState({}, '', 'dashboard.html');
   } else {
     activeToken = sessionStorage.getItem('dx_token');
   }
-
-  if (!activeToken) {
-    window.location.href = 'index.html';
-    return;
-  }
-
+  if(!activeToken){ window.location.href='index.html'; return; }
   showApp();
-  initDigits();
-  connectWS();
+  connect();
 }
 
-function showApp() {
-  document.getElementById('loading').classList.add('gone');
-  document.getElementById('app-header').style.display = 'flex';
-  document.getElementById('app-main').style.display = 'grid';
+function showApp(){
+  document.getElementById('loading').style.display='none';
+  document.getElementById('app-header').style.display='flex';
+  document.getElementById('app-nav').style.display='flex';
+  document.getElementById('app-main').style.display='grid';
+  const d = document.getElementById('digits');
+  for(let i=0;i<10;i++) d.innerHTML += `<div class="digit-box"><span>${i}</span><span id="d-${i}">0%</span></div>`;
 }
 
-function initDigits() {
-  const container = document.getElementById('digit-display');
-  container.innerHTML = '';
-  for(let i=0; i<10; i++) {
-    container.innerHTML += `<div class="digit-box"><div class="digit-num">${i}</div><div id="d-${i}" class="digit-pct">0%</div></div>`;
-  }
-}
-
-function connectWS() {
+function connect(){
   ws = new WebSocket(WS_URL);
-  ws.onopen = () => {
-    ws.send(JSON.stringify({ authorize: activeToken }));
-  };
-
+  ws.onopen = () => ws.send(JSON.stringify({authorize: activeToken}));
   ws.onmessage = (e) => {
     const data = JSON.parse(e.data);
-    
-    if (data.msg_type === 'authorize') {
-      document.getElementById('hname').textContent = data.authorize.loginid;
-      ws.send(JSON.stringify({ balance: 1, subscribe: 1 }));
-      ws.send(JSON.stringify({ ticks: 'R_100', subscribe: 1 }));
+    if(data.msg_type==='authorize'){
+      document.getElementById('hname').innerText = 'Account: ' + data.authorize.loginid;
+      ws.send(JSON.stringify({balance:1, subscribe:1}));
+      ws.send(JSON.stringify({ticks:'R_100', subscribe:1}));
     }
-
-    if (data.msg_type === 'balance') {
-      document.getElementById('hbal').textContent = data.balance.balance.toFixed(2) + ' ' + data.balance.currency;
+    if(data.msg_type==='balance') document.getElementById('hbal').innerText = data.balance.balance.toFixed(2) + ' ' + data.balance.currency;
+    if(data.msg_type==='tick'){
+      const q = data.tick.quote;
+      document.getElementById('last-tick').innerText = q.toFixed(2);
+      updateDigits(q.toString().slice(-1));
     }
-
-    if (data.msg_type === 'tick') {
-      const price = data.tick.quote;
-      const lastDigit = parseInt(price.toString().slice(-1));
-      document.getElementById('last-tick').textContent = price;
-      
-      updateDigits(lastDigit);
-    }
-  };
-}
-
-function updateDigits(digit) {
-  totalTicks++;
-  digitCounts[digit]++;
-  for(let i=0; i<10; i++) {
-    const pct = ((digitCounts[i] / totalTicks) * 100).toFixed(1);
-    document.getElementById(`d-${i}`).textContent = pct + '%';
   }
 }
 
+function updateDigits(digit){
+  ticks.push(parseInt(digit));
+  if(ticks.length > 100) ticks.shift();
+  let counts = Array(10).fill(0);
+  ticks.forEach(t => counts[t]++);
+  counts.forEach((c, i) => {
+    document.getElementById(`d-${i}`).innerText = ((c/ticks.length)*100).toFixed(0) + '%';
+  });
+}
 boot();
 </script>
 </body>
