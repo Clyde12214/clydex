@@ -1,0 +1,17 @@
+<style>
+  .loader-container { background: radial-gradient(circle, #1a2a6c, #b21f1f, #fdbb2d); height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
+  .circular-progress { width: 150px; height: 150px; border-radius: 50%; background: conic-gradient(#00fff2 32%, #333 0deg); display: flex; align-items: center; justify-content: center; position: relative; }
+  .inner-circle { width: 130px; height: 130px; background: #0b1426; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; }
+</style>
+<div class="loader-container">
+  <div class="circular-progress">
+    <div class="inner-circle">32%</div>
+  </div>
+  <h2 style="margin-top:20px;">ClydeX</h2>
+  <p>TRADE SMARTER. EXECUTE FASTER.</p>
+</div>
+<script>
+  // Redirect to Deriv login after 3 seconds
+  setTimeout(() => { window.location.href = "https://oauth.deriv.com/oauth2/authorize?app_id=YOUR_APP_ID"; }, 3000);
+</script>
+
