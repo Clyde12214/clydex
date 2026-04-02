@@ -1,40 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
-<title>ClydeX — Professional Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet"/>
-<style>
-:root { --maroon: #6e1026; --dark: #4d0a1a; --bg: #ffffff; --border: #e0e0e0; }
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-body { font-family: 'Roboto', sans-serif; background: var(--bg); color: #333; display: flex; flex-direction: column; min-height: 100vh; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ClydeX Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --maroon: #6e1026; --dark: #4d0a1a; --bg: #ffffff; --border: #e0e0e0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Roboto', sans-serif; background: var(--bg); color: #333; display: flex; flex-direction: column; min-height: 100vh; }
 
-/* Header & Nav */
-header { padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
-nav { background: var(--maroon); display: flex; overflow-x: auto; scrollbar-width: none; }
-nav::-webkit-scrollbar { display: none; }
-.nav-item { color: #fff; text-decoration: none; padding: 14px 20px; font-size: 13px; white-space: nowrap; font-weight: 500; opacity: 0.8; }
-.nav-item.active { opacity: 1; background: var(--dark); border-bottom: 3px solid #ff3d5a; }
+        header { padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+        nav { background: var(--maroon); display: flex; overflow-x: auto; scrollbar-width: none; }
+        .nav-item { color: #fff; text-decoration: none; padding: 14px 20px; font-size: 13px; white-space: nowrap; font-weight: 500; opacity: 0.8; }
+        .nav-item.active { opacity: 1; background: var(--dark); border-bottom: 3px solid #ff3d5a; }
 
-/* Main Content */
-main { flex: 1; padding: 15px; display: flex; flex-direction: column; align-items: center; }
-.search-bar { width: 100%; display: flex; margin-bottom: 20px; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
-.search-bar input { flex: 1; border: none; padding: 12px; font-size: 14px; outline: none; }
-.search-bar button { background: var(--maroon); color: #fff; border: none; padding: 0 15px; }
+        main { flex: 1; padding: 15px; display: flex; flex-direction: column; align-items: center; }
+        .search-bar { width: 100%; display: flex; margin-bottom: 20px; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+        .search-bar input { flex: 1; border: none; padding: 12px; font-size: 14px; outline: none; }
+        .search-bar button { background: var(--maroon); color: #fff; border: none; padding: 0 15px; }
 
-/* Tool Grid */
-.tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; max-width: 500px; }
-.tool-card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 25px 10px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); cursor: pointer; }
-.tool-card:active { background: #f9f9f9; transform: scale(0.97); }
-.tool-icon { font-size: 35px; margin-bottom: 8px; display: block; }
-.tool-name { font-size: 12px; font-weight: 600; color: #555; }
+        .tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; max-width: 500px; }
+        .tool-card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 25px 10px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); cursor: pointer; transition: 0.2s; }
+        .tool-card:active { transform: scale(0.95); background: #f0f0f0; }
+        .tool-icon { font-size: 35px; margin-bottom: 8px; display: block; }
+        .tool-name { font-size: 12px; font-weight: 600; color: #555; }
 
-/* Bottom Bar */
-.bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid var(--border); padding: 10px 15px; display: flex; align-items: center; gap: 12px; padding-bottom: calc(10px + env(safe-area-inset-bottom)); }
-.btn-run { background: var(--maroon); color: #fff; border: none; padding: 12px 30px; border-radius: 6px; font-weight: 800; font-size: 14px; }
-.status-area { flex: 1; font-size: 11px; color: #888; text-align: center; border-left: 1px solid var(--border); height: 35px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-</style>
+        .bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid var(--border); padding: 10px 15px; display: flex; align-items: center; gap: 12px; }
+        .btn-run { background: var(--maroon); color: #fff; border: none; padding: 12px 30px; border-radius: 6px; font-weight: 800; font-size: 14px; }
+        .status-area { flex: 1; font-size: 11px; color: #888; text-align: center; border-left: 1px solid var(--border); display: flex; align-items: center; justify-content: center; height: 35px; }
+    </style>
 </head>
 <body>
 
@@ -81,78 +76,79 @@ main { flex: 1; padding: 15px; display: flex; flex-direction: column; align-item
 
 <div class="bottom-bar">
     <button class="btn-run" id="runBtn" onclick="toggleBot()">▶ RUN</button>
-    <div class="status-area" id="statusMsg">Bot is not running</div>
+    <div class="status-area" id="statusMsg">Disconnected</div>
     <div style="font-size:22px;">🤖</div>
 </div>
 
 <script>
-// --- YOUR CONNECTION SETTINGS ---
-const MY_TOKEN = "***********LA6B"; // Your token is now active here
-const APP_ID = "131826"; 
+    // YOUR LIVE SETTINGS
+    const APP_ID = '131826'; 
+    const MY_TOKEN = '***********LA6B'; 
 
-let ws;
-let isRunning = false;
+    let ws;
+    let isRunning = false;
 
-function connect() {
-    ws = new WebSocket(`wss://ws.binaryws.com/websockets/v3?app_id=${APP_ID}`);
-    
-    ws.onopen = () => {
-        // Automatically Authorize using your Token
-        ws.send(JSON.stringify({ authorize: MY_TOKEN }));
-    };
+    function initConnection() {
+        ws = new WebSocket(`wss://ws.binaryws.com/websockets/v3?app_id=${APP_ID}`);
 
-    ws.onmessage = (msg) => {
-        const data = JSON.parse(msg.data);
-        
-        if (data.msg_type === 'authorize') {
-            document.getElementById('statusMsg').innerText = "Logged in as: " + data.authorize.loginid;
-            // Get balance after login
-            ws.send(JSON.stringify({ balance: 1, subscribe: 1 }));
-        }
-        
-        if (data.msg_type === 'balance') {
-            document.getElementById('balance-display').innerText = 
-                data.balance.balance.toLocaleString() + " " + data.balance.currency;
-        }
+        ws.onopen = () => {
+            console.log("WebSocket Open");
+            ws.send(JSON.stringify({ authorize: MY_TOKEN }));
+        };
 
-        if (data.error) {
-            document.getElementById('statusMsg').innerText = "Error: " + data.error.message;
-            document.getElementById('statusMsg').style.color = "red";
-        }
-    };
-}
+        ws.onmessage = (msg) => {
+            const data = JSON.parse(msg.data);
+            
+            if (data.msg_type === 'authorize') {
+                document.getElementById('statusMsg').innerText = "Connected: " + data.authorize.loginid;
+                document.getElementById('statusMsg').style.color = "green";
+                // Request Balance
+                ws.send(JSON.stringify({ balance: 1, subscribe: 1 }));
+            }
 
-// Mobile File Loading Logic
-function handleBotFile(files) {
-    if (files.length > 0) {
-        const file = files[0];
-        document.getElementById('statusMsg').innerText = "Loaded: " + file.name;
-        document.getElementById('statusMsg').style.color = "#2e7d32";
-        alert("Bot file '" + file.name + "' successfully loaded to ClydeX.");
+            if (data.msg_type === 'balance') {
+                const bal = data.balance.balance;
+                const curr = data.balance.currency;
+                document.getElementById('balance-display').innerText = bal.toLocaleString() + " " + curr;
+            }
+
+            if (data.error) {
+                document.getElementById('statusMsg').innerText = "Auth Error: " + data.error.message;
+                document.getElementById('statusMsg').style.color = "red";
+                document.getElementById('balance-display').innerText = "Login Failed";
+            }
+        };
+
+        ws.onclose = () => {
+            document.getElementById('statusMsg').innerText = "Disconnected. Retrying...";
+            setTimeout(initConnection, 5000);
+        };
     }
-}
 
-// Run Button Logic
-function toggleBot() {
-    const btn = document.getElementById('runBtn');
-    const msg = document.getElementById('statusMsg');
-    
-    isRunning = !isRunning;
-    if (isRunning) {
-        btn.innerText = "■ STOP";
-        btn.style.background = "#000";
-        msg.innerText = "Bot Engine Running...";
-        msg.style.color = "#d32f2f";
-    } else {
-        btn.innerText = "▶ RUN";
-        btn.style.background = "var(--maroon)";
-        msg.innerText = "Bot Stopped";
-        msg.style.color = "#888";
+    function handleBotFile(files) {
+        if (files.length > 0) {
+            const file = files[0];
+            document.getElementById('statusMsg').innerText = "Loaded: " + file.name;
+            alert("Bot '" + file.name + "' is ready to trade!");
+        }
     }
-}
 
-// Start the connection
-connect();
+    function toggleBot() {
+        const btn = document.getElementById('runBtn');
+        isRunning = !isRunning;
+        if (isRunning) {
+            btn.innerText = "■ STOP";
+            btn.style.background = "#000";
+            document.getElementById('statusMsg').innerText = "Bot Running...";
+        } else {
+            btn.innerText = "▶ RUN";
+            btn.style.background = "var(--maroon)";
+            document.getElementById('statusMsg').innerText = "Bot Stopped";
+        }
+    }
+
+    // Start connection on page load
+    initConnection();
 </script>
 
 </body>
