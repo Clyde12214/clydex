@@ -5,116 +5,172 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ClydeX - Professional Trader</title>
     <style>
-        :root { --deriv-red: #ff444f; --dark-bg: #0e0e0e; --card-bg: #15171a; --text-gray: #999; }
-        body { margin: 0; background: var(--dark-bg); color: white; font-family: 'IBM Plex Sans', sans-serif; height: 100vh; display: flex; flex-direction: column; }
+        :root { --deriv-red: #ff444f; --dark-bg: #101113; --card-bg: #1e2329; --green: #0ecb81; }
+        body { margin: 0; background: var(--dark-bg); color: white; font-family: sans-serif; display: flex; flex-direction: column; height: 100vh; }
 
-        /* Top Header */
-        header { background: #101113; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; }
-        .logo { font-weight: 900; color: var(--deriv-red); font-size: 20px; }
-        .balance-box { background: #2a2d32; padding: 5px 12px; border-radius: 4px; font-weight: bold; font-size: 14px; color: #00ffaa; }
+        header { background: #fff; color: #000; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; }
+        .nav { display: flex; background: #15171a; border-bottom: 1px solid #222; overflow-x: auto; }
+        .tab { padding: 15px 20px; font-size: 13px; color: #848e9c; cursor: pointer; white-space: nowrap; }
+        .tab.active { color: white; border-bottom: 2px solid var(--deriv-red); }
 
-        /* Navigation Tabs (Like your screenshots) */
-        nav { background: #101113; display: flex; border-bottom: 1px solid #222; overflow-x: auto; }
-        .tab { padding: 12px 20px; font-size: 13px; color: var(--text-gray); cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; }
-        .tab.active { color: white; border-bottom: 2px solid var(--deriv-red); background: rgba(255,68,79,0.05); }
+        .content { flex: 1; padding: 15px; overflow-y: auto; display: none; }
+        .content.active { display: block; }
 
-        /* Content Area */
-        .main-content { flex: 1; padding: 15px; overflow-y: auto; display: none; }
-        .main-content.active { display: block; }
-
-        /* UI Elements */
-        .card { background: var(--card-bg); border-radius: 8px; padding: 15px; margin-bottom: 15px; border: 1px solid #222; }
-        .btn-run { background: var(--deriv-red); color: white; border: none; width: 100%; padding: 15px; border-radius: 4px; font-weight: bold; margin-top: 10px; cursor: pointer; }
-        iframe { width: 100%; height: 500px; border: none; border-radius: 8px; }
+        /* Bot UI Components */
+        .card { background: var(--card-bg); border-radius: 12px; padding: 20px; margin-bottom: 15px; }
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .stat-box { background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; text-align: center; }
+        .log-area { background: #000; height: 150px; border-radius: 8px; padding: 10px; font-family: monospace; font-size: 11px; overflow-y: auto; color: #0f0; margin-top: 15px; border: 1px solid #333; }
+        
+        .btn-run { background: var(--green); color: white; border: none; width: 100%; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .btn-stop { background: var(--deriv-red); display: none; }
+        input { width: 100%; padding: 12px; background: #2b3139; border: 1px solid #444; color: white; border-radius: 5px; margin-bottom: 10px; box-sizing: border-box; }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="logo">CLYDEX</div>
-    <div class="balance-box" id="balanceText">USD 0.00</div>
+    <div style="font-weight:900; font-size:22px; color:var(--deriv-red);">CLYDEX</div>
+    <div id="balanceDisplay" style="font-weight:bold;">USD 0.00</div>
 </header>
 
 <nav>
-    <div class="tab active" onclick="openTab(event, 'dash')">📊 Dashboard</div>
-    <div class="tab" onclick="openTab(event, 'bots')">🤖 Free Bots</div>
-    <div class="tab" onclick="openTab(event, 'charts')">📈 Charts</div>
-    <div class="tab" onclick="openTab(event, 'builder')">🛠 Builder</div>
+    <div class="tab active" onclick="showTab('dash')">DASHBOARD</div>
+    <div class="tab" onclick="showTab('bot')">AUTO-BOT</div>
+    <div class="tab" onclick="showTab('charts')">CHARTS</div>
 </nav>
 
-<div id="dash" class="main-content active">
+<div id="dash" class="content active">
     <div class="card">
-        <small style="color:var(--text-gray)">Account ID</small>
-        <div id="accID" style="font-size: 18px; margin-top:5px;">Connecting...</div>
-    </div>
-    <div class="card">
-        <h3>Recent Activity</h3>
-        <p style="color:var(--text-gray); font-size:12px;">No recent trades found for this session.</p>
+        <h3 id="accID">Connecting...</h3>
+        <p style="color:#848e9c; font-size:12px;">Partner ID: CU21191 Tracking Active</p>
     </div>
 </div>
 
-<div id="bots" class="main-content">
+<div id="bot" class="content">
     <div class="card">
-        <h3>SV9 PRO AUTO-BOT</h3>
-        <p style="font-size:12px; color:var(--text-gray)">Strategy: Even/Odd Reversal with Martingale</p>
-        <input type="number" placeholder="Stake (0.35)" style="width:90%; padding:10px; margin-bottom:10px; background:#222; border:1px solid #444; color:white;">
-        <button class="btn-run">RUN BOT</button>
+        <h3>Even/Odd Reversal Bot</h3>
+        <p style="color:#848e9c; font-size:11px;">Volatility 100 (1s) Index</p>
+        
+        <input type="number" id="initialStake" placeholder="Initial Stake (e.g. 0.35)" value="0.35">
+        <input type="number" id="targetProfit" placeholder="Target Profit" value="2.00">
+        
+        <div class="stat-grid">
+            <div class="stat-box"><small>Wins</small><div id="winCount" style="color:var(--green)">0</div></div>
+            <div class="stat-box"><small>Losses</small><div id="lossCount" style="color:var(--deriv-red)">0</div></div>
+        </div>
+
+        <button id="runBtn" class="btn-run" onclick="toggleBot()">START BOT</button>
+        <div class="log-area" id="botLogs">SYSTEM: Ready to trade...</div>
     </div>
 </div>
 
-<div id="charts" class="main-content">
-    <iframe src="https://tradingview.deriv.com/v1/main.html"></iframe>
-</div>
-
-<div id="builder" class="main-content">
-    <div class="card" style="text-align:center; padding:50px 20px;">
-        <p>Visual Bot Builder is being synced with your Partner ID.</p>
-        <small style="color:var(--deriv-red)">Coming Soon</small>
-    </div>
+<div id="charts" class="content">
+    <iframe src="https://tradingview.deriv.com/v1/main.html" style="width:100%; height:80vh; border:none;"></iframe>
 </div>
 
 <script>
-    const ws = new WebSocket('wss://ws.binaryws.com/websockets/v3?app_id=131826');
+    let ws = new WebSocket('wss://ws.binaryws.com/websockets/v3?app_id=131826');
+    let isRunning = false;
+    let currentStake = 0.35;
+    let wins = 0, losses = 0;
+    let userToken = "";
 
-    function openTab(evt, tabName) {
-        let contents = document.getElementsByClassName("main-content");
-        for (let i = 0; i < contents.length; i++) contents[i].classList.remove("active");
-        
-        let tabs = document.getElementsByClassName("tab");
-        for (let i = 0; i < tabs.length; i++) tabs[i].classList.remove("active");
-        
-        document.getElementById(tabName).classList.add("active");
-        evt.currentTarget.classList.add("active");
+    function showTab(id) {
+        document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        event.currentTarget.classList.add('active');
     }
 
-    // Logic to catch the login from index.html
+    // Auth & Init
     document.addEventListener("DOMContentLoaded", () => {
         const params = new URLSearchParams(window.location.search);
-        const token = params.get('token1');
-        if (token) {
-            localStorage.setItem('user_token', token);
+        userToken = params.get('token1') || localStorage.getItem('token');
+        if (userToken) {
+            localStorage.setItem('token', userToken);
             window.history.replaceState({}, document.title, window.location.pathname);
-            initTrade(token);
-        } else if (localStorage.getItem('user_token')) {
-            initTrade(localStorage.getItem('user_token'));
+            startConnection();
         } else {
             window.location.href = "index.html";
         }
     });
 
-    function initTrade(token) {
-        ws.onopen = () => ws.send(JSON.stringify({ authorize: token }));
+    function startConnection() {
+        ws.onopen = () => ws.send(JSON.stringify({ authorize: userToken }));
         ws.onmessage = (msg) => {
-            const res = JSON.parse(msg.data);
-            if (res.msg_type === 'authorize') {
-                document.getElementById('accID').innerText = res.authorize.loginid;
+            const data = JSON.parse(msg.data);
+            if (data.msg_type === 'authorize') {
+                document.getElementById('accID').innerText = data.authorize.loginid;
                 ws.send(JSON.stringify({ balance: 1, subscribe: 1 }));
             }
-            if (res.msg_type === 'balance') {
-                document.getElementById('balanceText').innerText = res.balance.currency + " " + res.balance.balance;
+            if (data.msg_type === 'balance') {
+                document.getElementById('balanceDisplay').innerText = data.balance.currency + " " + data.balance.balance.toLocaleString();
+            }
+            // Handle trade results
+            if (data.msg_type === 'buy') log("Trade Executed ID: " + data.buy.contract_id);
+            if (data.msg_type === 'proposal_open_contract' && data.proposal_open_contract.is_sold) {
+                handleResult(data.proposal_open_contract);
             }
         };
     }
+
+    function toggleBot() {
+        const btn = document.getElementById('runBtn');
+        isRunning = !isRunning;
+        if (isRunning) {
+            btn.innerText = "STOP BOT";
+            btn.style.background = "#ff444f";
+            currentStake = parseFloat(document.getElementById('initialStake').value);
+            log("BOT STARTED: Market Analysis in progress...");
+            executeTrade();
+        } else {
+            btn.innerText = "START BOT";
+            btn.style.background = "#0ecb81";
+            log("BOT STOPPED.");
+        }
+    }
+
+    function executeTrade() {
+        if (!isRunning) return;
+        // Even/Odd Proposal
+        ws.send(JSON.stringify({
+            buy: 1,
+            price: currentStake,
+            parameters: {
+                amount: currentStake,
+                basis: "stake",
+                contract_type: "DIGITEVEN",
+                currency: "USD",
+                duration: 1,
+                duration_unit: "t",
+                symbol: "R_100"
+            },
+            subscribe: 1
+        }));
+    }
+
+    function handleResult(contract) {
+        if (contract.status === 'won') {
+            wins++;
+            document.getElementById('winCount').innerText = wins;
+            currentStake = parseFloat(document.getElementById('initialStake').value); // Reset
+            log("WIN! Profit: " + contract.profit);
+        } else {
+            losses++;
+            document.getElementById('lossCount').innerText = losses;
+            currentStake *= 2.1; // Martingale Logic
+            log("LOSS. Increasing stake to: " + currentStake.toFixed(2));
+        }
+        setTimeout(executeTrade, 2000); // Wait 2 seconds before next trade
+    }
+
+    function log(msg) {
+        const div = document.getElementById('botLogs');
+        div.innerHTML += `<div>[${new Date().toLocaleTimeString()}] ${msg}</div>`;
+        div.scrollTop = div.scrollHeight;
+    }
 </script>
+
 </body>
 </html>
