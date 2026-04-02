@@ -27,7 +27,7 @@
         .tool-name { font-size: 12px; font-weight: 600; color: #555; }
 
         .bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid var(--border); padding: 10px 15px; display: flex; align-items: center; gap: 12px; }
-        .btn-run { background: var(--maroon); color: #fff; border: none; padding: 12px 30px; border-radius: 6px; font-weight: 800; font-size: 14px; }
+        .btn-run { background: var(--maroon); color: #fff; border: none; padding: 12px 30px; border-radius: 6px; font-weight: 800; font-size: 14px; cursor: pointer; }
         .status-area { flex: 1; font-size: 11px; color: #888; text-align: center; border-left: 1px solid var(--border); display: flex; align-items: center; justify-content: center; height: 35px; }
     </style>
 </head>
@@ -81,18 +81,19 @@
 </div>
 
 <script>
-    // YOUR LIVE SETTINGS
+    // UPDATED SETTINGS
     const APP_ID = '131826'; 
-    const MY_TOKEN = '***********LA6B'; 
+    const MY_TOKEN = '1FGtc0bSKPzbgYs'; 
 
     let ws;
     let isRunning = false;
 
     function initConnection() {
+        // Using wss:// for secure mobile connection
         ws = new WebSocket(`wss://ws.binaryws.com/websockets/v3?app_id=${APP_ID}`);
 
         ws.onopen = () => {
-            console.log("WebSocket Open");
+            console.log("WebSocket Open - Sending Token");
             ws.send(JSON.stringify({ authorize: MY_TOKEN }));
         };
 
@@ -100,10 +101,15 @@
             const data = JSON.parse(msg.data);
             
             if (data.msg_type === 'authorize') {
-                document.getElementById('statusMsg').innerText = "Connected: " + data.authorize.loginid;
-                document.getElementById('statusMsg').style.color = "green";
-                // Request Balance
-                ws.send(JSON.stringify({ balance: 1, subscribe: 1 }));
+                if (data.error) {
+                    document.getElementById('statusMsg').innerText = "Auth Error: " + data.error.message;
+                    document.getElementById('statusMsg').style.color = "red";
+                } else {
+                    document.getElementById('statusMsg').innerText = "Account Connected";
+                    document.getElementById('statusMsg').style.color = "green";
+                    // Request Balance update
+                    ws.send(JSON.stringify({ balance: 1, subscribe: 1 }));
+                }
             }
 
             if (data.msg_type === 'balance') {
@@ -111,35 +117,31 @@
                 const curr = data.balance.currency;
                 document.getElementById('balance-display').innerText = bal.toLocaleString() + " " + curr;
             }
-
-            if (data.error) {
-                document.getElementById('statusMsg').innerText = "Auth Error: " + data.error.message;
-                document.getElementById('statusMsg').style.color = "red";
-                document.getElementById('balance-display').innerText = "Login Failed";
-            }
         };
 
         ws.onclose = () => {
-            document.getElementById('statusMsg').innerText = "Disconnected. Retrying...";
-            setTimeout(initConnection, 5000);
+            document.getElementById('statusMsg').innerText = "Reconnecting...";
+            setTimeout(initConnection, 3000);
+        };
+
+        ws.onerror = (err) => {
+            document.getElementById('statusMsg').innerText = "Connection Error";
         };
     }
 
     function handleBotFile(files) {
         if (files.length > 0) {
-            const file = files[0];
-            document.getElementById('statusMsg').innerText = "Loaded: " + file.name;
-            alert("Bot '" + file.name + "' is ready to trade!");
+            document.getElementById('statusMsg').innerText = "Bot Ready: " + files[0].name;
         }
     }
 
     function toggleBot() {
-        const btn = document.getElementById('runBtn');
         isRunning = !isRunning;
+        const btn = document.getElementById('runBtn');
         if (isRunning) {
             btn.innerText = "■ STOP";
             btn.style.background = "#000";
-            document.getElementById('statusMsg').innerText = "Bot Running...";
+            document.getElementById('statusMsg').innerText = "Bot is Active...";
         } else {
             btn.innerText = "▶ RUN";
             btn.style.background = "var(--maroon)";
@@ -147,9 +149,10 @@
         }
     }
 
-    // Start connection on page load
+    // Start connection
     initConnection();
 </script>
 
 </body>
-</html>
+                </html>
+                
