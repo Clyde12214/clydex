@@ -1,42 +1,79 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Clydex — Powered by Deriv</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@600;700;800&display=swap" rel="stylesheet"/>
-<style>
-:root{
-  --bg:#05070a; --card:#0c1018; --border:#16202e;
-  --accent:#00ffc2; --adim:rgba(0,255,194,0.08);
-  --text:#e8f0f8; --muted:#4a6278;
-  --mono:'DM Mono',monospace; --head:'Syne',sans-serif;
-}
-*{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);color:var(--text);font-family:var(--mono);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;}
-h1{font-family:var(--head);font-size:clamp(32px,5vw,64px);margin-bottom:20px;}
-.btn-p{background:var(--accent);color:#05070a;border:none;border-radius:8px;padding:14px 30px;cursor:pointer;font-weight:600;}
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);display:none;align-items:center;justify-content:center;}
-.overlay.open{display:flex;}
-.modal{background:var(--card);padding:40px;border-radius:12px;border:1px solid var(--border);}
-.mli{background:var(--accent);color:#05070a;border:none;padding:12px 24px;border-radius:6px;cursor:pointer;width:100%;font-weight:700;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ClydeX - Trade Smarter</title>
+    <style>
+        :root { --accent: #00fff2; --bg: #0b1426; }
+        body { margin: 0; background: var(--bg); color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
+        
+        .loader-container { text-align: center; width: 100%; padding: 20px; }
+        
+        /* The Circular Progress from your image */
+        .circular-progress { 
+            width: 160px; height: 160px; border-radius: 50%; 
+            background: conic-gradient(var(--accent) 0%, #222 0%); 
+            display: flex; align-items: center; justify-content: center; margin: 0 auto 30px;
+            box-shadow: 0 0 20px rgba(0, 255, 242, 0.2);
+            position: relative;
+        }
+        .inner-circle { width: 140px; height: 140px; background: var(--bg); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .percent-num { font-size: 32px; font-weight: 900; color: var(--accent); }
+        .loading-text { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; margin-top: 5px; color: #848e9c; }
+
+        h1 { font-size: 28px; letter-spacing: 4px; margin: 10px 0; font-weight: 900; }
+        .tagline { color: #848e9c; font-size: 12px; letter-spacing: 1px; margin-bottom: 40px; }
+
+        /* Small badges matching the DB Traders style */
+        .badge-row { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; opacity: 0.6; }
+        .badge { background: rgba(255,255,255,0.1); padding: 5px 12px; border-radius: 20px; font-size: 9px; border: 1px solid rgba(255,255,255,0.1); }
+    </style>
 </head>
 <body>
-<h1>Clyde<span style="color:var(--accent)">X</span></h1>
-<button class="btn-p" onclick="openModal()">Connect with Deriv</button>
-<div class="overlay" id="overlay">
-  <div class="modal">
-    <button class="mli" onclick="loginDeriv()">🔑 Login with Deriv</button>
-  </div>
+
+<div class="loader-container">
+    <div class="circular-progress" id="progress">
+        <div class="inner-circle">
+            <div class="percent-num" id="percentText">0</div>
+            <div class="loading-text">Loading</div>
+        </div>
+    </div>
+    
+    <h1>ClydeX</h1>
+    <p class="tagline">TRADE SMARTER. EXECUTE FASTER.</p>
+
+    <div class="badge-row">
+        <div class="badge">🤖 AI Bots</div>
+        <div class="badge">📊 Analysis Tool</div>
+        <div class="badge">⚡ Speed Bot</div>
+    </div>
 </div>
+
 <script>
-const APP_ID = '131826';
-const REDIRECT_URL = window.location.origin + '/dashboard.html';
-function openModal(){ document.getElementById('overlay').classList.add('open'); }
-function loginDeriv(){
-  window.location.href = `https://oauth.deriv.com/oauth2/authorize?app_id=${APP_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URL)}`;
-}
+    let progress = 0;
+    const progressCircle = document.getElementById('progress');
+    const percentText = document.getElementById('percentText');
+
+    // Simulate the loading percentage
+    const interval = setInterval(() => {
+        progress += 1;
+        percentText.innerText = progress;
+        progressCircle.style.background = `conic-gradient(#00fff2 ${progress}%, #222 0deg)`;
+        
+        if (progress >= 100) {
+            clearInterval(interval);
+            // After 100%, trigger the Deriv OAuth Login
+            setTimeout(redirectToDeriv, 500);
+        }
+    }, 40);
+
+    function redirectToDeriv() {
+        const appId = '131826'; 
+        const redirectUrl = encodeURIComponent('https://clyde12214.github.io/clydex/dashboard.html');
+        // This takes the user to the official "Approve Application" screen
+        window.location.href = `https://oauth.deriv.com/oauth2/authorize?app_id=${appId}&l=en&brand=deriv&redirect_uri=${redirectUrl}`;
+    }
 </script>
 </body>
 </html>
