@@ -3,71 +3,88 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>ClydeX Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+<title>ClydeX — Mkorean Style</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
 <style>
 :root{
   --bg:#05070a;--surface:#0b1018;--border:#16202e;--accent:#00ffc2;--text:#e8f0f8;--muted:#4a6278;
-  --mono:'DM Mono',monospace;--head:'Syne',sans-serif;
+  --win:#00ffc2;--loss:#ff3d5a;--mono:'DM Mono',monospace;--head:'Syne',sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);color:var(--text);font-family:var(--mono);display:flex;flex-direction:column;height:100vh;overflow:hidden;}
 
-/* Top Header */
 header{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:50px;border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0;}
 .hlogo{font-family:var(--head);font-weight:800;font-size:20px;}
-.hlogo em{color:var(--accent);font-style:normal;}
 .hbal{background:rgba(0,255,194,0.1);border:1px solid var(--accent);padding:5px 15px;border-radius:4px;color:var(--accent);font-weight:700;}
 
-/* App Navbar (The one from your image) */
-.app-navbar{display:flex;background:var(--surface);border-bottom:1px solid var(--border);height:40px;overflow-x:auto;align-items:center;padding:0 10px;gap:5px;flex-shrink:0;}
-.nav-item{color:var(--muted);text-decoration:none;font-size:10px;text-transform:uppercase;white-space:nowrap;padding:8px 12px;border-radius:4px;transition:0.2s;}
-.nav-item:hover{color:var(--text);background:rgba(255,255,255,0.05);}
-.nav-item.active{color:var(--accent);background:rgba(0,255,194,0.05);font-weight:600;}
+/* Main Grid */
+main{display:none;flex:1;grid-template-columns:1fr 380px;overflow:hidden;}
 
-/* Main Content */
-main{display:none;flex:1;grid-template-columns:1fr 320px;overflow:hidden;}
-.chart-area{padding:20px;display:flex;flex-direction:column;gap:15px;overflow-y:auto;}
-.sidebar{background:var(--surface);border-left:1px solid var(--border);padding:20px;display:flex;flex-direction:column;}
-.digit-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px;}
-.digit-box{background:var(--bg);border:1px solid var(--border);padding:10px;display:flex;justify-content:space-between;border-radius:4px;}
+/* Left: Chart & Statistics */
+.content-area{padding:20px;display:flex;flex-direction:column;gap:15px;overflow-y:auto;}
+.price-display{font-size:32px;font-weight:800;color:var(--accent);font-family:var(--head);}
+
+/* Right: Trading Panel */
+.trading-panel{background:var(--surface);border-left:1px solid var(--border);padding:20px;display:flex;flex-direction:column;gap:20px;}
+.input-group{display:flex;flex-direction:column;gap:8px;}
+.input-group label{font-size:10px;text-transform:uppercase;color:var(--muted);}
+input{background:var(--bg);border:1px solid var(--border);color:#fff;padding:12px;border-radius:6px;outline:none;font-family:var(--mono);}
+input:focus{border-color:var(--accent);}
+
+.trade-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.btn-trade{padding:15px;border:none;border-radius:6px;font-weight:800;cursor:pointer;font-family:var(--head);}
+.btn-over{background:var(--win);color:#000;}
+.btn-under{background:var(--loss);color:#fff;}
+
+/* Log Table */
+.log-container{flex:1;overflow-y:auto;margin-top:10px;border-top:1px solid var(--border);padding-top:10px;}
+table{width:100%;border-collapse:collapse;font-size:11px;}
+th{text-align:left;color:var(--muted);padding:8px 0;}
+td{padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05);}
+.win-text{color:var(--win);}
+.loss-text{color:var(--loss);}
 
 #loading{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:99;}
 </style>
 </head>
 <body>
 
-<div id="loading">Initializing ClydeX...</div>
+<div id="loading">Connecting to Mkorean WWN Engine...</div>
 
 <header id="app-header" style="display:none">
   <div class="hlogo">Clyde<em>X</em></div>
   <div id="hbal" class="hbal">0.00 USD</div>
 </header>
 
-<nav class="app-navbar" id="app-nav" style="display:none">
-  <a href="dashboard.html" class="nav-item active">Dashboard</a>
-  <a href="https://www.youtube.com/live" target="_blank" class="nav-item">YouTube Live</a>
-  <a href="https://app.deriv.com" target="_blank" class="nav-item">D-Trader</a>
-  <a href="#" onclick="alert('Bot Builder coming soon!')" class="nav-item">Bot Builder</a>
-  <a href="#" onclick="alert('Analysis Tools coming soon!')" class="nav-item">Analysis Tools</a>
-  <a href="#" onclick="alert('Copy Trading coming soon!')" class="nav-item">Copy Trading</a>
-</nav>
-
 <main id="app-main">
-  <div class="chart-area">
-    <div style="color:var(--muted); font-size:10px; letter-spacing:1px;">VOLATILITY 100 (1S) INDEX</div>
-    <div id="last-tick" style="font-size:32px; font-weight:700; color:var(--accent); font-family:var(--head);">0.0000</div>
-    <div style="flex:1; background:#000; border:1px solid var(--border); border-radius:12px; display:flex; align-items:center; justify-content:center; color:var(--muted);">
-        [ Real-time Chart Data Connected ]
+  <div class="content-area">
+    <div style="font-size:10px;color:var(--muted)">VOLATILITY 100 (1S) INDEX</div>
+    <div id="last-tick" class="price-display">0.00</div>
+    <div style="flex:1;background:#000;border:1px solid var(--border);border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--muted)">
+        [ TRADINGVIEW CHART HERE ]
     </div>
   </div>
-  <div class="sidebar">
-    <h3 style="font-family:var(--head); font-size:14px; margin-bottom:5px;">Digit Analysis</h3>
-    <p style="font-size:10px; color:var(--muted); margin-bottom:15px;">Percentage of last 100 ticks</p>
-    <div class="digit-grid" id="digits"></div>
-    <div style="margin-top:auto; padding-top:20px; border-top:1px solid var(--border);">
-        <div id="hname" style="font-size:11px; color:var(--text);">Account: ...</div>
-        <button onclick="sessionStorage.clear(); location.reload();" style="margin-top:10px; background:none; border:1px solid var(--border); color:var(--muted); padding:5px 10px; border-radius:4px; cursor:pointer; font-size:10px;">Logout</button>
+
+  <div class="trading-panel">
+    <div class="input-group">
+        <label>Stake (USD)</label>
+        <input type="number" id="stake" value="10.00">
+    </div>
+    <div class="input-group">
+        <label>Prediction (0-9)</label>
+        <input type="number" id="prediction" value="5" min="0" max="9">
+    </div>
+    
+    <div class="trade-btns">
+        <button class="btn-trade btn-over" onclick="placeTrade('DIGITOVER')">OVER</button>
+        <button class="btn-trade btn-under" onclick="placeTrade('DIGITUNDER')">UNDER</button>
+    </div>
+
+    <div class="log-container">
+        <table>
+            <thead><tr><th>Reference</th><th>Last Digit</th><th>Result</th></tr></thead>
+            <tbody id="trade-log"></tbody>
+        </table>
     </div>
   </div>
 </main>
@@ -76,18 +93,13 @@ main{display:none;flex:1;grid-template-columns:1fr 320px;overflow:hidden;}
 const APP_ID = '131826';
 const WS_URL = 'wss://ws.binaryws.com/websockets/v3?app_id=' + APP_ID;
 let ws, activeToken;
-let ticks = [];
 
 function boot() {
-  const p = new URLSearchParams(window.location.search);
-  if(p.get('token1')){
-    activeToken = p.get('token1');
-    sessionStorage.setItem('dx_token', activeToken);
-    window.history.replaceState({}, '', 'dashboard.html');
-  } else {
-    activeToken = sessionStorage.getItem('dx_token');
-  }
+  activeToken = sessionStorage.getItem('dx_token') || new URLSearchParams(window.location.search).get('token1');
   if(!activeToken){ window.location.href='index.html'; return; }
+  sessionStorage.setItem('dx_token', activeToken);
+  window.history.replaceState({}, '', 'dashboard.html');
+  
   showApp();
   connect();
 }
@@ -95,10 +107,7 @@ function boot() {
 function showApp(){
   document.getElementById('loading').style.display='none';
   document.getElementById('app-header').style.display='flex';
-  document.getElementById('app-nav').style.display='flex';
   document.getElementById('app-main').style.display='grid';
-  const d = document.getElementById('digits');
-  for(let i=0;i<10;i++) d.innerHTML += `<div class="digit-box"><span>${i}</span><span id="d-${i}" style="color:var(--accent); font-weight:600;">0%</span></div>`;
 }
 
 function connect(){
@@ -107,28 +116,67 @@ function connect(){
   ws.onmessage = (e) => {
     const data = JSON.parse(e.data);
     if(data.msg_type==='authorize'){
-      document.getElementById('hname').innerText = 'Account: ' + data.authorize.loginid;
       ws.send(JSON.stringify({balance:1, subscribe:1}));
       ws.send(JSON.stringify({ticks:'R_100', subscribe:1}));
     }
     if(data.msg_type==='balance') document.getElementById('hbal').innerText = data.balance.balance.toFixed(2) + ' ' + data.balance.currency;
     if(data.msg_type==='tick'){
-      const q = data.tick.quote;
-      document.getElementById('last-tick').innerText = q.toFixed(2);
-      updateDigits(q.toString().slice(-1));
+      document.getElementById('last-tick').innerText = data.tick.quote.toFixed(2);
+    }
+    if(data.msg_type==='buy'){
+      addLogEntry(data.buy.contract_id, "Processing...");
+    }
+    if(data.msg_type==='proposal_open_contract'){
+        if(data.proposal_open_contract.is_sold) {
+            updateLogEntry(data.proposal_open_contract);
+        }
     }
   }
 }
 
-function updateDigits(digit){
-  ticks.push(parseInt(digit));
-  if(ticks.length > 100) ticks.shift();
-  let counts = Array(10).fill(0);
-  ticks.forEach(t => counts[t]++);
-  counts.forEach((c, i) => {
-    document.getElementById(`d-${i}`).innerText = ((c/ticks.length)*100).toFixed(0) + '%';
-  });
+function placeTrade(type) {
+  const stake = document.getElementById('stake').value;
+  const pred = document.getElementById('prediction').value;
+  
+  ws.send(JSON.stringify({
+    "buy": 1,
+    "subscribe": 1,
+    "price": stake,
+    "parameters": {
+      "amount": parseFloat(stake),
+      "basis": "stake",
+      "contract_type": type,
+      "currency": "USD",
+      "duration": 1,
+      "duration_unit": "t",
+      "symbol": "R_100",
+      "barrier": pred
+    }
+  }));
 }
+
+function addLogEntry(id, status) {
+    const row = `<tr id="tr-${id}"><td>#${id.toString().slice(-5)}</td><td id="ld-${id}">-</td><td id="res-${id}">${status}</td></tr>`;
+    document.getElementById('trade-log').insertAdjacentHTML('afterbegin', row);
+}
+
+function updateLogEntry(contract) {
+    const id = contract.contract_id;
+    const exitTick = contract.exit_tick_display_value;
+    const lastDigit = exitTick.slice(-1);
+    const profit = contract.profit;
+    
+    document.getElementById(`ld-${id}`).innerText = lastDigit;
+    const resCell = document.getElementById(`res-${id}`);
+    if(profit > 0) {
+        resCell.innerText = "WIN";
+        resCell.className = "win-text";
+    } else {
+        resCell.innerText = "LOSS";
+        resCell.className = "loss-text";
+    }
+}
+
 boot();
 </script>
 </body>
