@@ -1,58 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/><title>ClydeX — Bot Builder</title>
-<style>
-body{background:#05070a;color:#e8f0f8;font-family:sans-serif;padding:30px;}
-.panel{max-width:400px;background:#0b1018;padding:20px;border-radius:10px;border:1px solid #16202e;}
-input{width:100%;padding:10px;margin:10px 0;background:#05070a;border:1px solid #16202e;color:#fff;}
-button{width:100%;padding:15px;background:#00ffc2;color:#000;font-weight:bold;border:none;border-radius:5px;cursor:pointer;}
-#log{margin-top:20px;font-size:12px;color:#4a6278;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClydeX - Free Bots</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --maroon: #6e1026; --dark-card: #2a050f; --text: #ffffff; --bg: #f4f4f4; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Roboto', sans-serif; background: var(--bg); color: #333; padding-bottom: 80px; }
+
+        /* Top Header */
+        header { background: #fff; padding: 15px; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; }
+        .nav-tabs { background: var(--maroon); display: flex; justify-content: space-around; padding: 10px 0; }
+        .nav-item { color: white; text-decoration: none; font-size: 13px; font-weight: bold; }
+
+        /* Search Bar */
+        .search-container { padding: 15px; }
+        .search-bar { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; background: #fff; }
+
+        /* The Grid Layout like mkorean */
+        .bot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 15px; }
+        
+        /* Bot Cards */
+        .bot-card { background: var(--dark-card); border-radius: 12px; padding: 15px; position: relative; color: white; overflow: hidden; }
+        .vip-badge { position: absolute; top: 0; right: 0; background: var(--maroon); font-size: 10px; padding: 2px 8px; border-bottom-left-radius: 8px; }
+        .risk-label { color: #ffa500; font-size: 11px; margin-bottom: 8px; display: block; }
+        .bot-title { font-size: 16px; font-weight: bold; margin-bottom: 5px; }
+        .bot-desc { font-size: 11px; opacity: 0.8; margin-bottom: 15px; line-height: 1.3; height: 40px; overflow: hidden; }
+        
+        .load-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; width: 100%; padding: 8px; border-radius: 6px; font-size: 12px; cursor: pointer; transition: 0.3s; }
+        .load-btn:hover { background: var(--maroon); }
+
+        /* Bottom Status Bar */
+        .bottom-bar { position: fixed; bottom: 0; width: 100%; background: #fff; border-top: 1px solid #ddd; padding: 15px; display: flex; align-items: center; }
+        .btn-run { background: var(--maroon); color: white; border: none; padding: 10px 25px; border-radius: 4px; font-weight: bold; }
+        .status-msg { margin-left: 15px; font-size: 12px; color: #666; }
+    </style>
 </head>
 <body>
-    <div class="panel">
-        <h3>Auto-Trade Bot</h3>
-        <label>Initial Stake</label>
-        <input type="number" id="stake" value="0.35">
-        <label>Martingale Multiplier</label>
-        <input type="number" id="multi" value="2.1">
-        <button onclick="startBot()">START BOT</button>
-        <div id="log">Bot Status: Offline</div>
+
+<header>
+    <div style="font-weight:900; font-size:20px;">ClydeX</div>
+    <div style="color:var(--maroon); font-weight:bold;">0 USD</div>
+</header>
+
+<div class="nav-tabs">
+    <a href="./bot.html" class="nav-item">Free Bots</a>
+    <a href="#" class="nav-item">AI Bots</a>
+    <a href="./dashboard.html" class="nav-item">Dashboard</a>
+</div>
+
+<div class="search-container">
+    <input type="text" class="search-bar" placeholder="Search bots by name...">
+</div>
+
+<div class="bot-grid">
+    <div class="bot-card">
+        <span class="vip-badge">✦ VIP</span>
+        <span class="risk-label">● Medium Risk</span>
+        <div class="bot-title">SV9 PRO</div>
+        <p class="bot-desc">Premium automated trading bot with advanced algorithms.</p>
+        <button class="load-btn" onclick="loadBot('SV9 PRO')">🚀 Load Bot</button>
     </div>
 
+    <div class="bot-card">
+        <span class="vip-badge">✦ VIP</span>
+        <span class="risk-label">● Medium Risk</span>
+        <div class="bot-title">SV9</div>
+        <p class="bot-desc">Standard version of the SV9 algorithm for steady gains.</p>
+        <button class="load-btn" onclick="loadBot('SV9')">🚀 Load Bot</button>
+    </div>
+
+    <div class="bot-card">
+        <span class="vip-badge">✦ VIP</span>
+        <span class="risk-label">● Medium Risk</span>
+        <div class="bot-title">Entry Scanner</div>
+        <p class="bot-desc">Scans for specific digit entries before starting trades.</p>
+        <button class="load-btn" onclick="loadBot('Entry Scanner')">🚀 Load Bot</button>
+    </div>
+
+    <div class="bot-card">
+        <span class="vip-badge">✦ VIP</span>
+        <span class="risk-label">● Medium Risk</span>
+        <div class="bot-title">Even/Odd</div>
+        <p class="bot-desc">Reversal bot using pattern strategies (3-8 digits).</p>
+        <button class="load-btn" onclick="loadBot('Even/Odd')">🚀 Load Bot</button>
+    </div>
+</div>
+
+<div class="bottom-bar">
+    <button class="btn-run">▶ RUN</button>
+    <div class="status-msg" id="statusText">Bot is not running</div>
+</div>
+
 <script>
-let activeToken = sessionStorage.getItem('dx_token');
-let currentStake = 0.35;
-let ws;
-
-function startBot(){
-    currentStake = parseFloat(document.getElementById('stake').value);
-    ws = new WebSocket('wss://ws.binaryws.com/websockets/v3?app_id=131826');
-    ws.onopen = () => ws.send(JSON.stringify({authorize: activeToken}));
-    ws.onmessage = (e) => {
-        const data = JSON.parse(e.data);
-        if(data.msg_type === 'authorize') {
-            document.getElementById('log').innerText = "Bot Status: Running...";
-            runTrade();
-        }
-        if(data.msg_type === 'proposal_open_contract' && data.proposal_open_contract.is_sold) {
-            const win = data.proposal_open_contract.profit > 0;
-            if(!win) currentStake *= parseFloat(document.getElementById('multi').value);
-            else currentStake = parseFloat(document.getElementById('stake').value);
-            runTrade();
-        }
-    };
-}
-
-function runTrade(){
-    ws.send(JSON.stringify({
-        buy: 1, parameters: { 
-            amount: currentStake, basis: 'stake', contract_type: 'DIGITOVER', 
-            currency: 'USD', duration: 1, duration_unit: 't', symbol: 'R_100', barrier: 5 
-        }
-    }));
-}
+    function loadBot(name) {
+        document.getElementById('statusText').innerText = "Loaded: " + name;
+        alert(name + " has been loaded successfully! Press RUN to start.");
+    }
 </script>
+
 </body>
 </html>
