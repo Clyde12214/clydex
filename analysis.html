@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>ClydeX — Analysis Tool</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono&family=Syne:wght@700&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#05070a;--surface:#0b1018;--border:#16202e;--accent:#00ffc2;--text:#e8f0f8;--muted:#4a6278;}
+body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;margin:0;padding:20px;}
+.grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(100px, 1fr));gap:10px;margin-top:20px;}
+.card{background:var(--surface);border:1px solid var(--border);padding:15px;border-radius:8px;text-align:center;}
+.num{font-size:24px;font-weight:bold;color:var(--accent);}
+.bar-container{height:150px;display:flex;align-items:flex-end;gap:5px;margin-top:30px;background:var(--surface);padding:10px;border-radius:8px;}
+.bar{flex:1;background:var(--accent);transition:height 0.3s;}
+</style>
+</head>
+<body>
+    <a href="dashboard.html" style="color:var(--accent);text-decoration:none;">← Back to Dashboard</a>
+    <h2 style="font-family:'Syne';margin-top:20px;">Digit Frequency (Last 100 Ticks)</h2>
+    <div class="grid" id="stat-grid"></div>
+    <div class="bar-container" id="bar-chart"></div>
+
+<script>
+const WS_URL = 'wss://ws.binaryws.com/websockets/v3?app_id=131826';
+let ticks = [];
+const ws = new WebSocket(WS_URL);
+
+ws.onopen = () => ws.send(JSON.stringify({ticks:'R_100', subscribe:1}));
+ws.onmessage = (e) => {
+    const data = JSON.parse(e.data);
+    if(data.msg_type === 'tick'){
+        const digit = data.tick.quote.toString().slice(-1);
+        ticks.push(parseInt(digit));
+        if(ticks.length > 100) ticks.shift();
+        render();
+    }
+};
+
+function render(){
+    const counts = Array(10).fill(0);
+    ticks.forEach(t => counts[t]++);
+    
+    document.getElementById('stat-grid').innerHTML = counts.map((c, i) => `
+        <div class="card"><div class="num">${i}</div><div>${c}%</div></div>
+    `).join('');
+    
+    document.getElementById('bar-chart').innerHTML = counts.map(c => `
+        <div class="bar" style="height:${c * 3}px"></div>
+    `).join('');
+}
+</script>
+</body>
+</html>
