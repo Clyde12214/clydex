@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>ClydeX Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@600;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#05070a;--surface:#0b1018;--surface2:#111922;
+  --border:#16202e;--accent:#00ffc2;--accent2:#ff3d5a;
+  --accent3:#ffc53d;--text:#e8f0f8;--muted:#4a6278;
+  --up:#00ffc2;--down:#ff3d5a;
+  --mono:'DM Mono',monospace;--head:'Syne',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:12px;min-height:100vh;overflow-x:hidden;}
+#loading{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
+#loading.gone{display:none;}
+.ll{font-family:var(--head);font-size:26px;font-weight:800;color:#fff;}
+.ll em{color:var(--accent);font-style:normal;}
+header{display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:48px;border-bottom:1px solid var(--border);background:var(--surface);position:sticky;top:0;z-index:50;}
+#app-header, #app-main { display: none; }
+.hbal{background:rgba(0,255,194,0.08);border:1px solid rgba(0,255,194,0.15);border-radius:5px;padding:5px 12px;font-family:var(--head);font-size:13px;font-weight:700;color:var(--accent);}
+/* Add more dashboard styles here if needed */
+</style>
+</head>
+<body>
+
+<div id="loading">
+  <div class="ll">Clyde<em>X</em></div>
+  <div id="lmsg">Authenticating...</div>
+</div>
+
+<header id="app-header">
+  <div class="hlogo">Clyde<em>X</em></div>
+  <div class="hbal" id="hbal">0.00 USD</div>
+</header>
+
+<main id="app-main">
+  <div style="padding: 20px;">
+    <h2>Welcome to your Dashboard</h2>
+    <p>Connected Account: <span id="hname">Loading...</span></p>
+  </div>
+</main>
+
+<script>
+const APP_ID = '131826';
+const WS_URL = 'wss://ws.binaryws.com/websockets/v3?app_id=' + APP_ID;
+let ws;
+let activeToken;
+
+function boot() {
+  const params = new URLSearchParams(window.location.search);
+  let accts = [];
+  let i = 1;
+
+  // Extract tokens from URL
+  while (params.get('acct' + i)) {
+    accts.push({
+      token: params.get('token' + i),
+      acct: params.get('acct' + i)
+    });
+    i++;
+  }
+
+  if (accts.length > 0) {
+    activeToken = accts[0].token;
+    sessionStorage.setItem('dx_token', activeToken);
+    // Clean the URL for security
+    window.history.replaceState({}, '', window.location.pathname);
+  } else {
+    activeToken = sessionStorage.getItem('dx_token');
+  }
+
+  if (!activeToken) {
+    window.location.href = 'index.html';
+    return;
+  }
+
+  showApp();
+  connectWS();
+}
+
+function showApp() {
+  document.getElementById('loading').classList.add('gone');
+  document.getElementById('app-header').style.display = 'flex';
+  document.getElementById('app-main').style.display = 'block';
+}
+
+function connectWS() {
+  ws = new WebSocket(WS_URL);
+  ws.onopen = () => ws.send(JSON.stringify({ authorize: activeToken }));
+  ws.onmessage = (e) => {
+    const data = JSON.parse(e.data);
+    if (data.msg_type === 'authorize') {
+      document.getElementById('hname').textContent = data.authorize.fullname || data.authorize.loginid;
+      ws.send(JSON.stringify({ balance: 1, subscribe: 1 }));
+    }
+    if (data.msg_type === 'balance') {
+      document.getElementById('hbal').textContent = data.balance.balance + ' ' + data.balance.currency;
+    }
+  };
+}
+
+boot();
+</script>
+</body>
+</html>
