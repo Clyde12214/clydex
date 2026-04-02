@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><title>ClydeX — Bot Builder</title>
+<style>
+body{background:#05070a;color:#e8f0f8;font-family:sans-serif;padding:30px;}
+.panel{max-width:400px;background:#0b1018;padding:20px;border-radius:10px;border:1px solid #16202e;}
+input{width:100%;padding:10px;margin:10px 0;background:#05070a;border:1px solid #16202e;color:#fff;}
+button{width:100%;padding:15px;background:#00ffc2;color:#000;font-weight:bold;border:none;border-radius:5px;cursor:pointer;}
+#log{margin-top:20px;font-size:12px;color:#4a6278;}
+</style>
+</head>
+<body>
+    <div class="panel">
+        <h3>Auto-Trade Bot</h3>
+        <label>Initial Stake</label>
+        <input type="number" id="stake" value="0.35">
+        <label>Martingale Multiplier</label>
+        <input type="number" id="multi" value="2.1">
+        <button onclick="startBot()">START BOT</button>
+        <div id="log">Bot Status: Offline</div>
+    </div>
+
+<script>
+let activeToken = sessionStorage.getItem('dx_token');
+let currentStake = 0.35;
+let ws;
+
+function startBot(){
+    currentStake = parseFloat(document.getElementById('stake').value);
+    ws = new WebSocket('wss://ws.binaryws.com/websockets/v3?app_id=131826');
+    ws.onopen = () => ws.send(JSON.stringify({authorize: activeToken}));
+    ws.onmessage = (e) => {
+        const data = JSON.parse(e.data);
+        if(data.msg_type === 'authorize') {
+            document.getElementById('log').innerText = "Bot Status: Running...";
+            runTrade();
+        }
+        if(data.msg_type === 'proposal_open_contract' && data.proposal_open_contract.is_sold) {
+            const win = data.proposal_open_contract.profit > 0;
+            if(!win) currentStake *= parseFloat(document.getElementById('multi').value);
+            else currentStake = parseFloat(document.getElementById('stake').value);
+            runTrade();
+        }
+    };
+}
+
+function runTrade(){
+    ws.send(JSON.stringify({
+        buy: 1, parameters: { 
+            amount: currentStake, basis: 'stake', contract_type: 'DIGITOVER', 
+            currency: 'USD', duration: 1, duration_unit: 't', symbol: 'R_100', barrier: 5 
+        }
+    }));
+}
+</script>
+</body>
+</html>
