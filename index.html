@@ -3,219 +3,287 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ClydeX - Professional Trading Suite</title>
+    <title>ClydeX | Premium Trading Suite</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --deriv-red: #ff444f; --dark-bg: #0e1117; --card-bg: #1c1f26; --green: #00c853; --gray: #848e9c; }
-        body { margin: 0; background: var(--dark-bg); color: white; font-family: 'Inter', sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        :root {
+            --primary: #ff444f;
+            --bg-dark: #0b0e11;
+            --card-glass: rgba(30, 35, 41, 0.9);
+            --text-main: #eaecef;
+            --text-dim: #848e9c;
+            --green: #0ecb81;
+            --border: rgba(255, 255, 255, 0.08);
+        }
 
-        /* Header Area */
-        header { background: #15171f; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #2d3139; }
-        .logo { font-weight: 900; font-size: 22px; color: var(--deriv-red); letter-spacing: 2px; }
-        .balance-box { background: #252932; padding: 6px 15px; border-radius: 4px; font-weight: bold; border: 1px solid #3e4450; color: var(--green); font-size: 14px; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { 
+            margin: 0; 
+            background: radial-gradient(circle at top right, #1e2329, var(--bg-dark)); 
+            color: var(--text-main); 
+            font-family: 'Inter', sans-serif; 
+            height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            overflow: hidden; 
+        }
 
-        /* Navigation Bar (Video Style) */
-        nav { display: flex; background: #15171f; border-bottom: 1px solid #2d3139; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-        .tab { padding: 14px 22px; cursor: pointer; color: var(--gray); font-size: 12px; font-weight: 600; white-space: nowrap; transition: 0.3s; border-bottom: 3px solid transparent; }
-        .tab.active { color: white; border-bottom: 3px solid var(--deriv-red); background: rgba(255, 68, 79, 0.08); }
+        /* Premium Header */
+        header {
+            background: rgba(11, 14, 17, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            z-index: 100;
+        }
+        .logo { font-weight: 800; font-size: 22px; color: var(--primary); letter-spacing: 2px; }
+        .balance-pill { 
+            background: var(--card-glass); 
+            padding: 8px 16px; 
+            border-radius: 8px; 
+            border: 1px solid var(--border);
+            font-weight: 600; 
+            color: var(--green);
+            font-size: 14px;
+        }
 
-        /* Main Content Sections */
-        .section { flex: 1; overflow-y: auto; display: none; padding: 15px; }
+        /* Glassmorphism Navigation */
+        nav { 
+            display: flex; 
+            background: rgba(11, 14, 17, 0.8); 
+            border-bottom: 1px solid var(--border); 
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .tab { 
+            padding: 16px 24px; 
+            cursor: pointer; 
+            color: var(--text-dim); 
+            font-size: 12px; 
+            font-weight: 600; 
+            white-space: nowrap; 
+            transition: 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+        .tab.active { 
+            color: white; 
+            border-bottom-color: var(--primary); 
+            background: rgba(255, 68, 79, 0.05); 
+        }
+
+        /* Content Areas */
+        .section { flex: 1; overflow-y: auto; display: none; padding: 20px; animation: fadeIn 0.4s ease; }
         .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* UI Components */
-        .card { background: var(--card-bg); border-radius: 12px; padding: 18px; margin-bottom: 15px; border: 1px solid #2d3139; }
-        .stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
-        .stat-item { background: #13151b; padding: 12px; border-radius: 8px; text-align: center; border: 1px solid #2d3139; }
-        
-        .btn-action { background: var(--deriv-red); color: white; border: none; width: 100%; padding: 14px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px; }
-        .btn-stop { background: #444; margin-top: 10px; }
-        
-        input { width: 100%; padding: 12px; background: #13151b; border: 1px solid #3e4450; color: white; border-radius: 4px; margin-top: 8px; box-sizing: border-box; }
-        .logs { background: #000; height: 120px; border-radius: 6px; padding: 10px; font-family: monospace; font-size: 11px; overflow-y: auto; color: #00ff00; margin-top: 15px; border: 1px solid #2d3139; }
+        /* Professional Cards */
+        .glass-card { 
+            background: var(--card-glass); 
+            border-radius: 16px; 
+            padding: 24px; 
+            border: 1px solid var(--border); 
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            margin-bottom: 20px;
+        }
 
-        iframe { width: 100%; height: 85vh; border: none; border-radius: 8px; }
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 14px;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.3s;
+            text-transform: uppercase;
+        }
+        .btn-primary:hover { background: #ff5f68; }
+        .btn-primary:active { transform: scale(0.97); }
+
+        /* Analysis Visualizer */
+        .analysis-container { margin-top: 20px; }
+        .progress-bg { background: #2b3139; height: 12px; border-radius: 6px; overflow: hidden; margin: 10px 0; }
+        .progress-fill { height: 100%; background: var(--green); width: 0%; transition: width 0.5s ease; }
+        
+        .log-box {
+            background: #000;
+            height: 150px;
+            border-radius: 8px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            overflow-y: auto;
+            color: #00ff00;
+            border: 1px solid var(--border);
+            margin-top: 15px;
+        }
+
+        iframe { width: 100%; height: 85vh; border: none; border-radius: 12px; }
     </style>
 </head>
 <body>
 
 <header>
     <div class="logo">CLYDEX</div>
-    <div class="balance-box" id="userBalance">LOG IN REQUIRED</div>
+    <div class="balance-pill" id="balanceDisplay">CONNECTING...</div>
 </header>
 
-<nav id="nav">
-    <div class="tab active" onclick="openSection(event, 'home')">DASHBOARD</div>
-    <div class="tab" onclick="openSection(event, 'bot_tab')">AUTO BOTS</div>
-    <div class="tab" onclick="openSection(event, 'chart_tab')">CHARTS</div>
-    <div class="tab" onclick="openSection(event, 'analysis_tab')">SIGNAL SCANNER</div>
+<nav>
+    <div class="tab active" onclick="switchTab(event, 'dash')">DASHBOARD</div>
+    <div class="tab" onclick="switchTab(event, 'bots')">AI BOTS</div>
+    <div class="tab" onclick="switchTab(event, 'charts')">LIVE CHARTS</div>
+    <div class="tab" onclick="switchTab(event, 'scanner')">SIGNAL SCANNER</div>
 </nav>
 
-<div id="home" class="section active">
-    <div class="card">
-        <h3 id="accountID">Welcome to ClydeX</h3>
-        <p style="color: var(--gray); font-size: 12px;">Earn commissions by trading on the global market.</p>
-        <button class="btn-action" onclick="login()">CONNECT DERIV ACCOUNT</button>
-        <p style="font-size:10px; color:var(--gray); margin-top:10px; text-align:center;">Secured via App ID: 131826</p>
+<div id="dash" class="section active">
+    <div class="glass-card">
+        <h2 id="userName">Global Trader</h2>
+        <p style="color: var(--text-dim); font-size: 13px;">Official Deriv Third-Party Platform</p>
+        <button class="btn-primary" onclick="login()">Login with Deriv</button>
     </div>
 </div>
 
-<div id="bot_tab" class="section">
-    <div class="card">
-        <h4 style="margin:0;">Volatility 100 (1s) - Even/Odd Bot</h4>
-        <div class="stat-row">
-            <div class="stat-item"><small>Wins</small><div id="wins" style="color:var(--green); font-size:18px;">0</div></div>
-            <div class="stat-item"><small>Losses</small><div id="losses" style="color:var(--deriv-red); font-size:18px;">0</div></div>
+<div id="bots" class="section">
+    <div class="glass-card">
+        <h3>Even/Odd Volatility 100</h3>
+        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+            <div style="flex:1; text-align:center; background: rgba(0,0,0,0.2); padding:10px; border-radius:8px;">
+                <small style="color:var(--text-dim)">WINS</small>
+                <div id="wins" style="color:var(--green); font-weight:800; font-size:20px;">0</div>
+            </div>
+            <div style="flex:1; text-align:center; background: rgba(0,0,0,0.2); padding:10px; border-radius:8px;">
+                <small style="color:var(--text-dim)">LOSSES</small>
+                <div id="losses" style="color:var(--primary); font-weight:800; font-size:20px;">0</div>
+            </div>
         </div>
-        <label style="font-size:11px; color:var(--gray);">STAKE AMOUNT ($)</label>
-        <input type="number" id="stake" value="0.35">
-        <button id="startBtn" class="btn-action" style="margin-top:15px;" onclick="toggleBot()">START AUTO-TRADING</button>
-        <div class="logs" id="botLogs">SYSTEM: Waiting for authorization...</div>
+        <label style="font-size:11px; color:var(--text-dim)">STAKE (USD)</label>
+        <input type="number" id="stakeInput" value="0.35" style="width:100%; padding:12px; background:#13151b; border:1px solid var(--border); color:white; border-radius:8px; margin:8px 0 20px 0;">
+        <button id="botActionBtn" class="btn-primary" onclick="toggleBot()">Run Auto Bot</button>
+        <div class="log-box" id="botLogs">SYSTEM: Waiting for login...</div>
     </div>
 </div>
 
-<div id="chart_tab" class="section" style="padding:0;">
+<div id="charts" class="section" style="padding:0;">
     <iframe src="https://tradingview.deriv.com/v1/main.html"></iframe>
 </div>
 
-<div id="analysis_tab" class="section">
-    <div class="card">
-        <h4>Market Sentiment (Last 50 Ticks)</h4>
-        <div id="analysisFeed" style="font-family:monospace; font-size:13px; line-height:1.6;">
-            Calculating probability...
+<div id="scanner" class="section">
+    <div class="glass-card">
+        <h3>Market Sentiment</h3>
+        <p style="font-size:12px; color:var(--text-dim)">Analyzing last 50 market ticks...</p>
+        <div class="analysis-container" id="analysisUI">
+            <div>Even Probability: <span id="probVal">0%</span></div>
+            <div class="progress-bg"><div id="probBar" class="progress-fill"></div></div>
+            <div id="signalText" style="font-weight:bold; margin-top:10px;">SCANNING...</div>
         </div>
     </div>
 </div>
 
 <script>
     const APP_ID = '131826';
-    const PARTNER_TOKEN = 'E941D587-FB92-4272-8FD5-A662EBEDEE4C';
-    const REDIRECT_URL = window.location.href.split('?')[0];
-    
-    let ws = new WebSocket(`wss://ws.binaryws.com/websockets/v3?app_id=${APP_ID}`);
-    let isRunning = false;
-    let currentStake = 0.35;
-    let winCount = 0;
-    let lossCount = 0;
-    let userToken = "";
+    const TOKEN_AFFILIATE = 'E941D587-FB92-4272-8FD5-A662EBEDEE4C';
+    let ws, userToken, isRunning = false;
+    let wins = 0, losses = 0, currentStake = 0.35;
 
-    function openSection(evt, name) {
+    function switchTab(e, id) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.getElementById(name).classList.add('active');
-        evt.currentTarget.classList.add('active');
+        document.getElementById(id).classList.add('active');
+        e.currentTarget.classList.add('active');
     }
 
     function login() {
-        window.location.href = `https://oauth.deriv.com/oauth2/authorize?app_id=${APP_ID}&l=en&brand=deriv&affiliate_token=${PARTNER_TOKEN}&redirect_uri=${REDIRECT_URL}`;
+        const url = `https://oauth.deriv.com/oauth2/authorize?app_id=${APP_ID}&l=en&brand=deriv&affiliate_token=${TOKEN_AFFILIATE}&redirect_uri=${window.location.href.split('?')[0]}`;
+        window.location.href = url;
     }
 
-    // Initialize Connection
-    document.addEventListener("DOMContentLoaded", () => {
+    window.onload = () => {
         const params = new URLSearchParams(window.location.search);
-        userToken = params.get('token1') || localStorage.getItem('clydex_token');
-        
-        if (userToken) {
-            localStorage.setItem('clydex_token', userToken);
+        userToken = params.get('token1') || localStorage.getItem('token');
+        if(userToken) {
+            localStorage.setItem('token', userToken);
             window.history.replaceState({}, document.title, window.location.pathname);
-            connect();
+            initWS();
+        } else {
+            document.getElementById('balanceDisplay').innerText = "NOT LOGGED IN";
         }
-    });
+    };
 
-    function connect() {
+    function initWS() {
+        ws = new WebSocket(`wss://ws.binaryws.com/websockets/v3?app_id=${APP_ID}`);
         ws.onopen = () => ws.send(JSON.stringify({ authorize: userToken }));
-        
         ws.onmessage = (msg) => {
-            const data = JSON.parse(msg.data);
-            
-            if (data.msg_type === 'authorize') {
-                document.getElementById('accountID').innerText = "Account: " + data.authorize.loginid;
+            const res = JSON.parse(msg.data);
+            if(res.msg_type === 'authorize') {
+                document.getElementById('userName').innerText = "Trader: " + res.authorize.loginid;
                 ws.send(JSON.stringify({ balance: 1, subscribe: 1 }));
                 ws.send(JSON.stringify({ ticks: 'R_100', subscribe: 1 }));
             }
-            
-            if (data.msg_type === 'balance') {
-                document.getElementById('userBalance').innerText = data.balance.currency + " " + data.balance.balance;
-            }
-
-            if (data.msg_type === 'tick') {
-                updateAnalysis(data.tick.quote);
-            }
-
-            if (data.msg_type === 'proposal_open_contract' && data.proposal_open_contract.is_sold) {
-                handleBotResult(data.proposal_open_contract);
-            }
+            if(res.msg_type === 'balance') document.getElementById('balanceDisplay').innerText = res.balance.currency + " " + res.balance.balance;
+            if(res.msg_type === 'tick') processTick(res.tick.quote);
+            if(res.msg_type === 'proposal_open_contract' && res.proposal_open_contract.is_sold) handleResult(res.proposal_open_contract);
         };
     }
 
-    // Bot Execution Logic
+    // Bot Logic
     function toggleBot() {
-        if (!userToken) return alert("Please log in first!");
+        if(!userToken) return alert("Please Login First");
         isRunning = !isRunning;
-        const btn = document.getElementById('startBtn');
-        if (isRunning) {
-            btn.innerText = "STOP BOT";
-            btn.style.background = "#444";
-            currentStake = parseFloat(document.getElementById('stake').value);
-            addLog("Bot Started - Analyzing Patterns...");
-            executeTrade();
-        } else {
-            btn.innerText = "START AUTO-TRADING";
-            btn.style.background = "var(--deriv-red)";
-            addLog("Bot Stopped.");
+        const btn = document.getElementById('botActionBtn');
+        btn.innerText = isRunning ? "STOP BOT" : "RUN AUTO BOT";
+        btn.style.background = isRunning ? "#444" : "var(--primary)";
+        if(isRunning) {
+            currentStake = parseFloat(document.getElementById('stakeInput').value);
+            addLog("Bot Started...");
+            trade();
         }
     }
 
-    function executeTrade() {
-        if (!isRunning) return;
+    function trade() {
+        if(!isRunning) return;
         ws.send(JSON.stringify({
             buy: 1, price: currentStake,
-            parameters: {
-                amount: currentStake, basis: "stake", contract_type: "DIGITEVEN",
-                currency: "USD", duration: 1, duration_unit: "t", symbol: "R_100"
-            },
-            subscribe: 1
+            parameters: { amount: currentStake, basis: 'stake', contract_type: 'DIGITEVEN', currency: 'USD', duration: 1, duration_unit: 't', symbol: 'R_100' }
         }));
     }
 
-    function handleBotResult(contract) {
-        if (contract.status === 'won') {
-            winCount++;
-            document.getElementById('wins').innerText = winCount;
-            currentStake = parseFloat(document.getElementById('stake').value);
-            addLog(`WIN: +$${contract.profit}`);
+    function handleResult(c) {
+        if(c.status === 'won') {
+            wins++; document.getElementById('wins').innerText = wins;
+            currentStake = parseFloat(document.getElementById('stakeInput').value);
+            addLog(`WIN: +$${c.profit}`);
         } else {
-            lossCount++;
-            document.getElementById('losses').innerText = lossCount;
-            currentStake *= 2.1; // Martingale
-            addLog(`LOSS: Martingale Stake $${currentStake.toFixed(2)}`);
+            losses++; document.getElementById('losses').innerText = losses;
+            currentStake *= 2.1;
+            addLog(`LOSS: Martingale $${currentStake.toFixed(2)}`);
         }
-        if (isRunning) setTimeout(executeTrade, 2000);
+        if(isRunning) setTimeout(trade, 2000);
     }
 
-    // Analysis Tool Logic
+    // Scanner Logic
     let ticks = [];
-    function updateAnalysis(quote) {
-        const lastDigit = quote.toString().slice(-1);
-        ticks.push(parseInt(lastDigit));
-        if (ticks.length > 50) ticks.shift();
-        
+    function processTick(q) {
+        const lastDigit = parseInt(q.toString().slice(-1));
+        ticks.push(lastDigit);
+        if(ticks.length > 50) ticks.shift();
         const evens = ticks.filter(n => n % 2 === 0).length;
-        const odds = ticks.length - evens;
-        const evenPct = ((evens / ticks.length) * 100).toFixed(0);
+        const prob = ((evens / ticks.length) * 100).toFixed(0);
         
-        document.getElementById('analysisFeed').innerHTML = `
-            <div style="margin-bottom:10px;">Even Density: <b style="color:var(--green)">${evenPct}%</b></div>
-            <div style="height:10px; background:#444; border-radius:5px;">
-                <div style="width:${evenPct}%; height:100%; background:var(--green); border-radius:5px;"></div>
-            </div>
-            <p style="font-size:11px; color:var(--gray); margin-top:10px;">Recommended: ${evenPct > 55 ? 'TRADE EVEN' : 'WAIT FOR TREND'}</p>
-        `;
+        document.getElementById('probVal').innerText = prob + "%";
+        document.getElementById('probBar').style.width = prob + "%";
+        document.getElementById('signalText').innerText = prob > 55 ? "SIGNAL: HIGH EVEN PROBABILITY" : "SIGNAL: NEUTRAL";
+        document.getElementById('signalText').style.color = prob > 55 ? var(--green) : "white";
     }
 
-    function addLog(msg) {
-        const logger = document.getElementById('botLogs');
-        logger.innerHTML += `<div>[${new Date().toLocaleTimeString()}] ${msg}</div>`;
-        logger.scrollTop = logger.scrollHeight;
+    function addLog(m) {
+        const l = document.getElementById('botLogs');
+        l.innerHTML += `<div>[${new Date().toLocaleTimeString()}] ${m}</div>`;
+        l.scrollTop = l.scrollHeight;
     }
 </script>
 </body>
