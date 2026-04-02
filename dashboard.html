@@ -39,11 +39,11 @@
 </header>
 
 <nav>
-    <a href="#" class="nav-item">YouTube Live</a>
-    <a href="#" class="nav-item">🤖 Free Bots</a>
-    <a href="dashboard.html" class="nav-item active">Dashboard</a>
-    <a href="#" class="nav-item">Bot Builder</a>
-    <a href="#" class="nav-item">Analysis Tools</a>
+    <a href="https://www.youtube.com" class="nav-item">YouTube Live</a>
+    <a href="./free-bots.html" class="nav-item">🤖 Free Bots</a>
+    <a href="./dashboard.html" class="nav-item active">Dashboard</a>
+    <a href="./bot-builder.html" class="nav-item">Bot Builder</a>
+    <a href="./analysis.html" class="nav-item">Analysis Tools</a>
 </nav>
 
 <main>
@@ -59,15 +59,18 @@
             <span class="tool-icon">📁</span>
             <span class="tool-name">Load Bot</span>
         </div>
-        <div class="tool-card">
+
+        <div class="tool-card" onclick="window.location.href='https://t.me/your_telegram'">
             <span class="tool-icon">⭐</span>
             <span class="tool-name">Premium Bots</span>
         </div>
-        <div class="tool-card">
+
+        <div class="tool-card" onclick="window.location.href='./free-bots.html'">
             <span class="tool-icon">🤖</span>
             <span class="tool-name">Free Bots</span>
         </div>
-        <div class="tool-card">
+
+        <div class="tool-card" onclick="window.location.href='./analysis.html'">
             <span class="tool-icon">📈</span>
             <span class="tool-name">Analysis Tool</span>
         </div>
@@ -81,7 +84,7 @@
 </div>
 
 <script>
-    // UPDATED SETTINGS
+    // CORE SETTINGS
     const APP_ID = '131826'; 
     const MY_TOKEN = '1FGtc0bSKPzbgYs'; 
 
@@ -89,11 +92,9 @@
     let isRunning = false;
 
     function initConnection() {
-        // Using wss:// for secure mobile connection
         ws = new WebSocket(`wss://ws.binaryws.com/websockets/v3?app_id=${APP_ID}`);
 
         ws.onopen = () => {
-            console.log("WebSocket Open - Sending Token");
             ws.send(JSON.stringify({ authorize: MY_TOKEN }));
         };
 
@@ -102,12 +103,11 @@
             
             if (data.msg_type === 'authorize') {
                 if (data.error) {
-                    document.getElementById('statusMsg').innerText = "Auth Error: " + data.error.message;
+                    document.getElementById('statusMsg').innerText = "Token Error";
                     document.getElementById('statusMsg').style.color = "red";
                 } else {
                     document.getElementById('statusMsg').innerText = "Account Connected";
                     document.getElementById('statusMsg').style.color = "green";
-                    // Request Balance update
                     ws.send(JSON.stringify({ balance: 1, subscribe: 1 }));
                 }
             }
@@ -123,15 +123,12 @@
             document.getElementById('statusMsg').innerText = "Reconnecting...";
             setTimeout(initConnection, 3000);
         };
-
-        ws.onerror = (err) => {
-            document.getElementById('statusMsg').innerText = "Connection Error";
-        };
     }
 
     function handleBotFile(files) {
         if (files.length > 0) {
-            document.getElementById('statusMsg').innerText = "Bot Ready: " + files[0].name;
+            document.getElementById('statusMsg').innerText = "Bot Loaded: " + files[0].name;
+            alert("Bot " + files[0].name + " is ready.");
         }
     }
 
@@ -141,7 +138,7 @@
         if (isRunning) {
             btn.innerText = "■ STOP";
             btn.style.background = "#000";
-            document.getElementById('statusMsg').innerText = "Bot is Active...";
+            document.getElementById('statusMsg').innerText = "Bot Running...";
         } else {
             btn.innerText = "▶ RUN";
             btn.style.background = "var(--maroon)";
@@ -149,10 +146,8 @@
         }
     }
 
-    // Start connection
     initConnection();
 </script>
 
 </body>
-                </html>
-                
+</html>
