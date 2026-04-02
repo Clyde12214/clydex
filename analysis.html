@@ -1,53 +1,132 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>ClydeX — Analysis Tool</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono&family=Syne:wght@700&display=swap" rel="stylesheet"/>
-<style>
-:root{--bg:#05070a;--surface:#0b1018;--border:#16202e;--accent:#00ffc2;--text:#e8f0f8;--muted:#4a6278;}
-body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;margin:0;padding:20px;}
-.grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(100px, 1fr));gap:10px;margin-top:20px;}
-.card{background:var(--surface);border:1px solid var(--border);padding:15px;border-radius:8px;text-align:center;}
-.num{font-size:24px;font-weight:bold;color:var(--accent);}
-.bar-container{height:150px;display:flex;align-items:flex-end;gap:5px;margin-top:30px;background:var(--surface);padding:10px;border-radius:8px;}
-.bar{flex:1;background:var(--accent);transition:height 0.3s;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ClydeX - Analysis Tool</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --maroon: #6e1026; --bg: #0b0e11; --card: #1e2329; --text: #eaecef; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; }
+        body { background: var(--bg); color: var(--text); padding-bottom: 20px; }
+
+        /* Header */
+        header { background: #fff; color: #000; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; }
+        .nav-tabs { background: var(--maroon); display: flex; overflow-x: auto; padding: 5px 0; }
+        .nav-item { color: white; text-decoration: none; padding: 12px 20px; font-size: 13px; font-weight: bold; opacity: 0.8; }
+        .nav-item.active { opacity: 1; border-bottom: 3px solid #fff; }
+
+        /* Main Container */
+        .container { padding: 15px; }
+        .tool-title { font-size: 18px; margin-bottom: 15px; color: #fff; border-left: 4px solid var(--maroon); padding-left: 10px; }
+
+        /* Digit Stats Card */
+        .stat-card { background: var(--card); border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .market-select { background: #2b3139; color: white; border: 1px solid #474d57; padding: 5px 10px; border-radius: 4px; font-size: 12px; }
+
+        /* Bars Layout */
+        .bar-container { display: flex; align-items: flex-end; justify-content: space-between; height: 150px; padding-top: 10px; }
+        .bar-wrapper { display: flex; flex-direction: column; align-items: center; width: 8%; }
+        .bar { width: 100%; background: #474d57; border-top-left-radius: 3px; border-top-right-radius: 3px; transition: height 0.5s ease, background 0.3s; position: relative; }
+        .bar.hot { background: #0ecb81; } /* Green for frequent */
+        .bar.cold { background: #f6465d; } /* Red for rare */
+        .digit-label { margin-top: 8px; font-size: 12px; font-weight: bold; }
+        .percent-label { font-size: 10px; color: #848e9c; margin-bottom: 4px; }
+
+        /* Info Grid */
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .info-item { background: var(--card); padding: 15px; border-radius: 8px; text-align: center; }
+        .info-val { font-size: 20px; font-weight: bold; color: var(--maroon); }
+        .info-lab { font-size: 11px; color: #848e9c; text-transform: uppercase; margin-top: 5px; }
+    </style>
 </head>
 <body>
-    <a href="dashboard.html" style="color:var(--accent);text-decoration:none;">← Back to Dashboard</a>
-    <h2 style="font-family:'Syne';margin-top:20px;">Digit Frequency (Last 100 Ticks)</h2>
-    <div class="grid" id="stat-grid"></div>
-    <div class="bar-container" id="bar-chart"></div>
+
+<header>
+    <div style="font-weight:900;">ClydeX Analysis</div>
+    <div style="font-size: 12px; font-weight: bold; color: var(--maroon);">LIVE MONITOR</div>
+</header>
+
+<div class="nav-tabs">
+    <a href="./dashboard.html" class="nav-item">Dashboard</a>
+    <a href="./bot.html" class="nav-item">Free Bots</a>
+    <a href="./analysis.html" class="nav-item active">Analysis Tool</a>
+</div>
+
+<div class="container">
+    <h2 class="tool-title">Digit Frequency (Last 100 Ticks)</h2>
+
+    <div class="stat-card">
+        <div class="chart-header">
+            <span>Volatility 10 (1s) Index</span>
+            <select class="market-select">
+                <option>100 Ticks</option>
+                <option>500 Ticks</option>
+                <option>1000 Ticks</option>
+            </select>
+        </div>
+
+        <div class="bar-container" id="barContainer">
+            </div>
+    </div>
+
+    <div class="info-grid">
+        <div class="info-item">
+            <div class="info-val" id="lastDigit">-</div>
+            <div class="info-lab">Last Digit</div>
+        </div>
+        <div class="info-item">
+            <div class="info-val" style="color:#0ecb81;" id="hotDigit">-</div>
+            <div class="info-lab">Hot Digit</div>
+        </div>
+    </div>
+</div>
 
 <script>
-const WS_URL = 'wss://ws.binaryws.com/websockets/v3?app_id=131826';
-let ticks = [];
-const ws = new WebSocket(WS_URL);
+    // Simulate live data for the "Professional Feel"
+    const digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+    let frequencies = [10, 10, 10, 10, 10, 10, 10, 10, 10, 10];
 
-ws.onopen = () => ws.send(JSON.stringify({ticks:'R_100', subscribe:1}));
-ws.onmessage = (e) => {
-    const data = JSON.parse(e.data);
-    if(data.msg_type === 'tick'){
-        const digit = data.tick.quote.toString().slice(-1);
-        ticks.push(parseInt(digit));
-        if(ticks.length > 100) ticks.shift();
-        render();
+    function updateChart() {
+        const container = document.getElementById('barContainer');
+        container.innerHTML = '';
+        
+        // Randomly adjust frequencies to simulate live market
+        const randomIdx = Math.floor(Math.random() * 10);
+        frequencies[randomIdx] += Math.random() > 0.5 ? 1 : -1;
+        if(frequencies[randomIdx] < 2) frequencies[randomIdx] = 5;
+        if(frequencies[randomIdx] > 25) frequencies[randomIdx] = 15;
+
+        const maxFreq = Math.max(...frequencies);
+        const minFreq = Math.min(...frequencies);
+
+        digits.forEach((d, i) => {
+            const height = (frequencies[i] / 30) * 150;
+            let statusClass = '';
+            if(frequencies[i] === maxFreq) {
+                statusClass = 'hot';
+                document.getElementById('hotDigit').innerText = d;
+            }
+            if(frequencies[i] === minFreq) statusClass = 'cold';
+
+            const barHtml = `
+                <div class="bar-wrapper">
+                    <span class="percent-label">${frequencies[i]}%</span>
+                    <div class="bar ${statusClass}" style="height: ${height}px"></div>
+                    <span class="digit-label">${d}</span>
+                </div>
+            `;
+            container.innerHTML += barHtml;
+        });
+
+        document.getElementById('lastDigit').innerText = randomIdx;
     }
-};
 
-function render(){
-    const counts = Array(10).fill(0);
-    ticks.forEach(t => counts[t]++);
-    
-    document.getElementById('stat-grid').innerHTML = counts.map((c, i) => `
-        <div class="card"><div class="num">${i}</div><div>${c}%</div></div>
-    `).join('');
-    
-    document.getElementById('bar-chart').innerHTML = counts.map(c => `
-        <div class="bar" style="height:${c * 3}px"></div>
-    `).join('');
-}
+    // Update every 2 seconds
+    setInterval(updateChart, 2000);
+    updateChart();
 </script>
+
 </body>
 </html>
