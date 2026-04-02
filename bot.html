@@ -2,104 +2,162 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ClydeX - Free Bots</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        :root { --maroon: #6e1026; --dark-card: #2a050f; --text: #ffffff; --bg: #f4f4f4; }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Roboto', sans-serif; background: var(--bg); color: #333; padding-bottom: 80px; }
+        :root { --maroon: #6e1026; --dark-bg: #1a1a1a; --card-bg: #2d050e; --text: #ffffff; }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; }
+        body { background-color: #f8f9fa; color: #333; padding-bottom: 80px; }
 
         /* Top Header */
-        header { background: #fff; padding: 15px; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; }
-        .nav-tabs { background: var(--maroon); display: flex; justify-content: space-around; padding: 10px 0; }
-        .nav-item { color: white; text-decoration: none; font-size: 13px; font-weight: bold; }
+        .top-nav { background: #fff; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; }
+        .auth-buttons button { padding: 5px 12px; border-radius: 4px; border: none; font-size: 11px; font-weight: bold; cursor: pointer; margin-left: 5px; }
+        .btn-login { background: var(--maroon); color: white; }
+        .btn-api { background: #eee; color: #333; }
 
-        /* Search Bar */
-        .search-container { padding: 15px; }
-        .search-bar { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; background: #fff; }
+        /* Navigation Tabs like mkorean */
+        .category-tabs { background: var(--maroon); display: flex; overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
+        .tab-item { color: rgba(255,255,255,0.7); text-decoration: none; padding: 15px 20px; font-size: 13px; font-weight: 500; }
+        .tab-item.active { color: #fff; background: rgba(0,0,0,0.2); border-bottom: 3px solid #fff; }
 
-        /* The Grid Layout like mkorean */
-        .bot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 15px; }
-        
-        /* Bot Cards */
-        .bot-card { background: var(--dark-card); border-radius: 12px; padding: 15px; position: relative; color: white; overflow: hidden; }
-        .vip-badge { position: absolute; top: 0; right: 0; background: var(--maroon); font-size: 10px; padding: 2px 8px; border-bottom-left-radius: 8px; }
-        .risk-label { color: #ffa500; font-size: 11px; margin-bottom: 8px; display: block; }
-        .bot-title { font-size: 16px; font-weight: bold; margin-bottom: 5px; }
-        .bot-desc { font-size: 11px; opacity: 0.8; margin-bottom: 15px; line-height: 1.3; height: 40px; overflow: hidden; }
-        
-        .load-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; width: 100%; padding: 8px; border-radius: 6px; font-size: 12px; cursor: pointer; transition: 0.3s; }
-        .load-btn:hover { background: var(--maroon); }
+        /* Search Area */
+        .search-box { padding: 15px; }
+        .search-box input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ddd; background: #fff; outline: none; font-size: 14px; }
+
+        /* 2-COLUMN BOT GRID */
+        .bot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 15px; }
+
+        .bot-card { 
+            background: var(--card-bg); 
+            border-radius: 12px; 
+            padding: 15px; 
+            color: white; 
+            position: relative; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .vip-tag { 
+            position: absolute; top: 0; right: 0; 
+            background: linear-gradient(45deg, #ff3d5a, var(--maroon)); 
+            font-size: 9px; padding: 3px 10px; 
+            border-bottom-left-radius: 10px; font-weight: bold; 
+        }
+
+        .risk-badge { color: #ffcc00; font-size: 10px; margin-bottom: 8px; display: block; font-weight: 500; }
+        .bot-name { font-size: 15px; font-weight: 700; margin-bottom: 5px; color: #fff; }
+        .bot-description { font-size: 11px; color: rgba(255,255,255,0.7); line-height: 1.4; margin-bottom: 15px; min-height: 45px; }
+
+        .btn-load { 
+            background: rgba(255,255,255,0.1); 
+            color: white; border: 1px solid rgba(255,255,255,0.3); 
+            width: 100%; padding: 10px; border-radius: 6px; 
+            font-size: 11px; font-weight: bold; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 5px;
+        }
+        .btn-load:active { background: var(--maroon); border-color: transparent; }
+
+        /* Floating Disclaimer */
+        .risk-disclaimer { background: #ffcc00; color: #000; padding: 6px 12px; font-size: 10px; font-weight: bold; position: fixed; bottom: 75px; left: 10px; border-radius: 4px; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
 
         /* Bottom Status Bar */
-        .bottom-bar { position: fixed; bottom: 0; width: 100%; background: #fff; border-top: 1px solid #ddd; padding: 15px; display: flex; align-items: center; }
-        .btn-run { background: var(--maroon); color: white; border: none; padding: 10px 25px; border-radius: 4px; font-weight: bold; }
-        .status-msg { margin-left: 15px; font-size: 12px; color: #666; }
+        .bottom-control { position: fixed; bottom: 0; width: 100%; background: #fff; border-top: 1px solid #ddd; padding: 12px 15px; display: flex; align-items: center; z-index: 1000; }
+        .btn-run { background: var(--maroon); color: white; border: none; padding: 10px 25px; border-radius: 5px; font-weight: 900; font-size: 14px; }
+        .status-text { flex: 1; text-align: center; font-size: 12px; color: #666; font-weight: bold; padding: 0 10px; }
     </style>
 </head>
 <body>
 
-<header>
-    <div style="font-weight:900; font-size:20px;">ClydeX</div>
-    <div style="color:var(--maroon); font-weight:bold;">0 USD</div>
-</header>
-
-<div class="nav-tabs">
-    <a href="./bot.html" class="nav-item">Free Bots</a>
-    <a href="#" class="nav-item">AI Bots</a>
-    <a href="./dashboard.html" class="nav-item">Dashboard</a>
-</div>
-
-<div class="search-container">
-    <input type="text" class="search-bar" placeholder="Search bots by name...">
-</div>
-
-<div class="bot-grid">
-    <div class="bot-card">
-        <span class="vip-badge">✦ VIP</span>
-        <span class="risk-label">● Medium Risk</span>
-        <div class="bot-title">SV9 PRO</div>
-        <p class="bot-desc">Premium automated trading bot with advanced algorithms.</p>
-        <button class="load-btn" onclick="loadBot('SV9 PRO')">🚀 Load Bot</button>
+    <div class="top-nav">
+        <div style="font-weight:900; font-size:20px; color:#333;">ClydeX</div>
+        <div class="auth-buttons">
+            <button class="btn-api">API Token</button>
+            <button class="btn-login">Log In</button>
+        </div>
     </div>
 
-    <div class="bot-card">
-        <span class="vip-badge">✦ VIP</span>
-        <span class="risk-label">● Medium Risk</span>
-        <div class="bot-title">SV9</div>
-        <p class="bot-desc">Standard version of the SV9 algorithm for steady gains.</p>
-        <button class="load-btn" onclick="loadBot('SV9')">🚀 Load Bot</button>
+    <div class="category-tabs">
+        <a href="./bot.html" class="tab-item active">Free Bots</a>
+        <a href="#" class="tab-item">AI Bots</a>
+        <a href="./dashboard.html" class="tab-item">Dashboard</a>
+        <a href="./analysis.html" class="tab-item">Analysis Tools</a>
     </div>
 
-    <div class="bot-card">
-        <span class="vip-badge">✦ VIP</span>
-        <span class="risk-label">● Medium Risk</span>
-        <div class="bot-title">Entry Scanner</div>
-        <p class="bot-desc">Scans for specific digit entries before starting trades.</p>
-        <button class="load-btn" onclick="loadBot('Entry Scanner')">🚀 Load Bot</button>
+    <div class="search-box">
+        <input type="text" placeholder="Search bots by name or description...">
     </div>
 
-    <div class="bot-card">
-        <span class="vip-badge">✦ VIP</span>
-        <span class="risk-label">● Medium Risk</span>
-        <div class="bot-title">Even/Odd</div>
-        <p class="bot-desc">Reversal bot using pattern strategies (3-8 digits).</p>
-        <button class="load-btn" onclick="loadBot('Even/Odd')">🚀 Load Bot</button>
+    <div class="bot-grid">
+        <div class="bot-card">
+            <span class="vip-tag">✦ VIP</span>
+            <span class="risk-badge">● Medium Risk</span>
+            <div class="bot-name">SV9 PRO</div>
+            <div class="bot-description">Premium automated trading bot with advanced algorithms.</div>
+            <button class="btn-load" onclick="selectBot('SV9 PRO')">🚀 Load Bot</button>
+        </div>
+
+        <div class="bot-card">
+            <span class="vip-tag">✦ VIP</span>
+            <span class="risk-badge">● Medium Risk</span>
+            <div class="bot-name">SV9</div>
+            <div class="bot-description">Standard version of the SV9 algorithm for steady gains.</div>
+            <button class="btn-load" onclick="selectBot('SV9')">🚀 Load Bot</button>
+        </div>
+
+        <div class="bot-card">
+            <span class="vip-tag">✦ VIP</span>
+            <span class="risk-badge">● Medium Risk</span>
+            <div class="bot-name">Entry Scanner</div>
+            <div class="bot-description">Checks for entry digits on start or every trade.</div>
+            <button class="btn-load" onclick="selectBot('Entry Scanner')">🚀 Load Bot</button>
+        </div>
+
+        <div class="bot-card">
+            <span class="vip-tag">✦ VIP</span>
+            <span class="risk-badge">● Medium Risk</span>
+            <div class="bot-name">Even/Odd Reversal</div>
+            <div class="bot-description">Reversal bot using pattern strategies (3-8 digits).</div>
+            <button class="btn-load" onclick="selectBot('Even/Odd Reversal')">🚀 Load Bot</button>
+        </div>
     </div>
-</div>
 
-<div class="bottom-bar">
-    <button class="btn-run">▶ RUN</button>
-    <div class="status-msg" id="statusText">Bot is not running</div>
-</div>
+    <div class="risk-disclaimer">⚠ Risk Disclaimer</div>
 
-<script>
-    function loadBot(name) {
-        document.getElementById('statusText').innerText = "Loaded: " + name;
-        alert(name + " has been loaded successfully! Press RUN to start.");
-    }
-</script>
+    <div class="bottom-control">
+        <button class="btn-run" id="mainRunBtn" onclick="runBot()">▶ RUN</button>
+        <div class="status-text" id="statusLabel">Bot is not running</div>
+        <div style="font-size:24px;">🤖</div>
+    </div>
 
+    <script>
+        // Logic to "Show" the loaded bot
+        function selectBot(name) {
+            const statusLabel = document.getElementById('statusLabel');
+            
+            // 1. Update text and color to show it's loaded
+            statusLabel.innerText = "Loaded: " + name;
+            statusLabel.style.color = "#0ecb81"; // Green color
+            
+            // 2. Give user feedback
+            alert("Success: " + name + " is now ready. Tap RUN to begin trading.");
+            
+            // 3. Save for persistence (optional)
+            localStorage.setItem('activeBot', name);
+        }
+
+        function runBot() {
+            const label = document.getElementById('statusLabel');
+            if (label.innerText === "Bot is not running") {
+                alert("Please select a bot to load first!");
+            } else {
+                label.innerText = "Bot Active & Executing...";
+                label.style.color = "#ff3d5a"; // Red color
+                document.getElementById('mainRunBtn').innerText = "■ STOP";
+            }
+        }
+    </script>
 </body>
 </html>
