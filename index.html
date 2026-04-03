@@ -3,85 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ClydeX | Digit Analysis & Auto-Bot</title>
+    <title>ClydeX | Premium Digit Trader</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #ff444f; --bg: #0b0e11; --card: #1c1f26; --green: #0ecb81; --border: rgba(255, 255, 255, 0.1); }
-        body { margin: 0; background: var(--bg); color: #eaecef; font-family: 'Inter', sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-        
-        header { background: #15171f; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
-        .logo { font-weight: 800; font-size: 20px; color: var(--primary); letter-spacing: 1px; }
-        .balance { background: var(--card); padding: 6px 12px; border-radius: 4px; color: var(--green); font-family: 'Roboto Mono', monospace; font-size: 14px; border: 1px solid var(--border); }
+        :root { 
+            --primary: #ff444f; 
+            --bg: #0b0e11; 
+            --card: #1c1f26; 
+            --green: #0ecb81; 
+            --border: rgba(255, 255, 255, 0.1); 
+        }
+
+        /* --- CLYDEX BREATHING LOADER --- */
+        #loader-layer {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.8s ease;
+        }
+        .breathing-loader img {
+            width: 80px; height: 80px;
+            animation: breathing 2s infinite ease-in-out;
+            filter: drop-shadow(0 0 10px var(--primary));
+        }
+        @keyframes breathing {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.15); opacity: 0.7; }
+        }
+        .loader-text {
+            margin-top: 25px;
+            font-size: 14px;
+            color: var(--primary);
+            letter-spacing: 3px;
+            font-weight: 800;
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        /* --- APP INTERFACE --- */
+        body { margin: 0; background: var(--bg); color: #eaecef; font-family: 'Inter', sans-serif; height: 100vh; overflow: hidden; display: none; }
+        header { background: #15171f; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+        .logo { font-weight: 800; color: var(--primary); font-size: 22px; letter-spacing: 1px; }
+        .balance { background: rgba(14, 203, 129, 0.1); padding: 8px 15px; border-radius: 6px; color: var(--green); font-family: 'Roboto Mono', monospace; font-weight: 700; border: 1px solid rgba(14, 203, 129, 0.2); }
         
         nav { display: flex; background: #15171f; border-bottom: 1px solid var(--border); }
-        .tab { flex: 1; text-align: center; padding: 12px; cursor: pointer; color: #848e9c; font-size: 11px; font-weight: 700; text-transform: uppercase; border-bottom: 2px solid transparent; }
+        .tab { flex: 1; text-align: center; padding: 15px; cursor: pointer; color: #848e9c; font-size: 11px; font-weight: 800; text-transform: uppercase; border-bottom: 3px solid transparent; transition: 0.3s; }
         .tab.active { color: white; border-bottom-color: var(--primary); background: rgba(255, 68, 79, 0.05); }
 
-        .section { flex: 1; overflow-y: auto; display: none; padding: 15px; }
-        .section.active { display: block; }
+        .section { display: none; padding: 20px; height: calc(100vh - 120px); overflow-y: auto; }
+        .section.active { display: block; animation: slideUp 0.4s ease; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Digit Pad Style (Mkoreans Style) */
-        .digit-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 10px; }
-        .digit-box { background: #252932; padding: 10px; border-radius: 6px; text-align: center; border: 1px solid var(--border); }
-        .digit-num { font-weight: 800; font-size: 16px; display: block; }
-        .digit-pct { font-size: 10px; color: var(--text-dim); font-family: 'Roboto Mono', monospace; }
-        .bar-container { background: #13151b; height: 4px; border-radius: 2px; margin-top: 5px; overflow: hidden; }
-        .bar-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.3s; }
+        /* Digit Stats Grid */
+        .digit-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 15px; }
+        .digit-box { background: #252932; padding: 12px; border-radius: 8px; text-align: center; border: 1px solid var(--border); transition: 0.3s; }
+        .digit-num { font-size: 18px; font-weight: 800; display: block; }
+        .digit-pct { font-size: 11px; font-family: 'Roboto Mono'; color: #848e9c; display: block; margin-top: 4px; }
+        .bar { height: 4px; background: #13151b; border-radius: 2px; margin-top: 8px; overflow: hidden; }
+        .fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.4s ease; }
 
-        .glass-card { background: var(--card); border-radius: 12px; padding: 20px; border: 1px solid var(--border); margin-bottom: 15px; }
-        .btn { background: var(--primary); color: white; border: none; width: 100%; padding: 14px; border-radius: 8px; font-weight: 800; cursor: pointer; }
-        .log-box { background: #000; height: 100px; border-radius: 6px; padding: 10px; font-family: 'Roboto Mono', monospace; font-size: 10px; overflow-y: auto; color: #00ff00; border: 1px solid var(--border); margin-top: 10px; }
+        .btn { background: var(--primary); color: white; border: none; width: 100%; padding: 16px; border-radius: 12px; font-weight: 800; cursor: pointer; margin-top: 15px; box-shadow: 0 4px 15px rgba(255, 68, 79, 0.3); }
+        .log-box { background: #000; height: 130px; border-radius: 8px; padding: 12px; font-family: 'Roboto Mono'; font-size: 10px; color: #0f0; overflow-y: auto; margin-top: 15px; border: 1px solid var(--border); }
     </style>
 </head>
 <body>
 
+<div id="loader-layer">
+    <div class="breathing-loader">
+        <img src="https://cdn-icons-png.flaticon.com/512/2502/2502174.png" alt="ClydeX Logo">
+    </div>
+    <div class="loader-text">WWW.CLYDEX.COM</div>
+</div>
+
 <header>
     <div class="logo">CLYDEX</div>
-    <div class="balance" id="balanceDisplay">USD 0.00</div>
+    <div id="balanceDisplay" class="balance">USD 0.00</div>
 </header>
 
 <nav>
     <div class="tab active" onclick="switchTab(event, 'analysis')">ANALYSIS</div>
-    <div class="tab" onclick="switchTab(event, 'bots')">BOT CONTROL</div>
+    <div class="tab" onclick="switchTab(event, 'bot')">AUTO-BOT</div>
 </nav>
 
 <div id="analysis" class="section active">
-    <div class="glass-card">
-        <h4 style="margin:0 0 10px 0;">LIVE DIGIT STATS (LDP)</h4>
-        <div class="digit-grid" id="digitPad">
-            </div>
-        <p style="font-size:10px; color:#848e9c; margin-top:15px; text-align:center;">Analyzing Last 100 Ticks: Volatility 100 (1s)</p>
+    <div style="background: var(--card); padding: 25px; border-radius: 16px; border: 1px solid var(--border);">
+        <h4 style="margin:0; letter-spacing: 1px;">DIGIT FREQUENCY (100 TICKS)</h4>
+        <div class="digit-grid" id="digitPad"></div>
     </div>
-    <button class="btn" onclick="login()" style="background:#252932; border:1px solid var(--border);">CONNECT DERIV ACCOUNT</button>
+    <button class="btn" onclick="login()" style="background:#252932; border: 1px solid var(--border);">CONNECT DERIV ACCOUNT</button>
 </div>
 
-<div id="bots" class="section">
-    <div class="glass-card">
-        <h3 style="margin-top:0;">Rise/Fall Auto-Bot</h3>
-        <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
-            <span>Stake: <b id="displayStake">0.35</b></span>
-            <span>Profit: <b id="displayProfit" style="color:var(--green)">0.00</b></span>
-        </div>
-        <button id="botBtn" class="btn" onclick="toggleBot()">START BOT</button>
-        <div class="log-box" id="botLogs">SYSTEM: Ready. Connect account to trade.</div>
+<div id="bot" class="section">
+    <div style="background: var(--card); padding: 25px; border-radius: 16px; border: 1px solid var(--border);">
+        <h3 style="margin:0;">Volatility 100 (1s) Bot</h3>
+        <p style="color:#848e9c; font-size:13px; margin-bottom: 20px;">Strategy: Digit Even/Odd Auto-Trade</p>
+        <button id="botBtn" class="btn" onclick="toggleBot()">START CLYDEX BOT</button>
+        <div id="botLogs" class="log-box">SYSTEM: Offline... Waiting for Login</div>
     </div>
 </div>
 
 <script>
+    // YOUR LIVE SETTINGS
     const APP_ID = '131826'; 
-    const AFFILIATE = 'E941D587-FB92-4272-8FD5-A662EBEDEE4C'; 
+    const AFFILIATE = 'E941D587-FB92-4272-8FD5-A662EBEDEE4C';
+    
     let ws, token, isRunning = false;
     let ticks = [];
-    let stats = Array(10).fill(0);
 
-    // Initialize Digit Pad
+    // Build Digit Pad
     const pad = document.getElementById('digitPad');
     for(let i=0; i<10; i++) {
         pad.innerHTML += `
-            <div class="digit-box" id="d-box-${i}">
+            <div class="digit-box" id="db-${i}">
                 <span class="digit-num">${i}</span>
-                <span class="digit-pct" id="d-pct-${i}">0%</span>
-                <div class="bar-container"><div class="bar-fill" id="d-bar-${i}"></div></div>
+                <span class="digit-pct" id="dp-${i}">0%</span>
+                <div class="bar"><div class="fill" id="df-${i}"></div></div>
             </div>`;
     }
 
@@ -98,25 +138,35 @@
     }
 
     window.onload = () => {
+        // Show loader for 3 seconds like MKoreans
+        setTimeout(() => {
+            document.getElementById('loader-layer').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('loader-layer').style.display = 'none';
+                document.body.style.display = 'block';
+            }, 800);
+        }, 3000);
+
         const params = new URLSearchParams(window.location.search);
         token = params.get('token1') || localStorage.getItem('token');
         if(token) {
             localStorage.setItem('token', token);
             window.history.replaceState({}, '', window.location.pathname);
-            initConnection();
+            initWS();
         }
     };
 
-    function initConnection() {
+    function initWS() {
         ws = new WebSocket(`wss://ws.binaryws.com/websockets/v3?app_id=${APP_ID}`);
         ws.onopen = () => {
             ws.send(JSON.stringify({ authorize: token }));
             ws.send(JSON.stringify({ ticks: 'R_100', subscribe: 1 }));
+            addLog("System Connected Successfully.");
         };
         ws.onmessage = (msg) => {
             const res = JSON.parse(msg.data);
-            if(res.msg_type === 'balance') document.getElementById('balanceDisplay').innerText = res.balance.currency + " " + res.balance.balance;
             if(res.msg_type === 'tick') updateStats(res.tick.quote);
+            if(res.msg_type === 'balance') document.getElementById('balanceDisplay').innerText = res.balance.currency + " " + res.balance.balance;
             if(res.msg_type === 'authorize') ws.send(JSON.stringify({ balance: 1, subscribe: 1 }));
         };
     }
@@ -126,24 +176,25 @@
         ticks.push(lastDigit);
         if(ticks.length > 100) ticks.shift();
 
-        // Calculate Percentages
         const counts = Array(10).fill(0);
         ticks.forEach(t => counts[t]++);
-        
         counts.forEach((count, i) => {
             const pct = ((count / ticks.length) * 100).toFixed(0);
-            document.getElementById(`d-pct-${i}`).innerText = pct + "%";
-            document.getElementById(`d-bar-${i}`).style.width = pct + "%";
-            // Highlight Hot/Cold
-            document.getElementById(`d-box-${i}`).style.borderColor = pct > 15 ? "var(--primary)" : "var(--border)";
+            document.getElementById(`dp-${i}`).innerText = pct + "%";
+            document.getElementById(`df-${i}`).style.width = pct + "%";
+            // Highlight active/hot digits
+            document.getElementById(`db-${i}`).style.borderColor = pct > 16 ? "var(--primary)" : "var(--border)";
+            document.getElementById(`db-${i}`).style.background = pct > 16 ? "rgba(255, 68, 79, 0.1)" : "#252932";
         });
     }
 
     function toggleBot() {
-        if(!token) return alert("Login first!");
+        if(!token) return alert("Please Login First!");
         isRunning = !isRunning;
-        document.getElementById('botBtn').innerText = isRunning ? "STOP BOT" : "START BOT";
-        if(isRunning) addLog("Bot Active: Monitoring Digits...");
+        const btn = document.getElementById('botBtn');
+        btn.innerText = isRunning ? "STOP CLYDEX BOT" : "START CLYDEX BOT";
+        btn.style.background = isRunning ? "#444" : "var(--primary)";
+        addLog(isRunning ? "Bot Engine Started..." : "Bot Engine Stopped.");
     }
 
     function addLog(m) {
@@ -154,3 +205,4 @@
 </script>
 </body>
 </html>
+
