@@ -10,7 +10,15 @@ import { TradeControls } from './trade-controls';
 import { TradeTypeChips } from '@/components/custom/trade-type-chips';
 import { SymbolSelector } from '@/components/custom/symbol-selector';
 import { ThemeToggle } from '@/components/custom/theme-toggle';
-import type { AuthState, DerivAccount, ActiveSymbol, Tick, ProposalInfo, DurationLimits, BuyResult } from '@deriv/core';
+import type {
+  AuthState,
+  DerivAccount,
+  ActiveSymbol,
+  Tick,
+  ProposalInfo,
+  DurationLimits,
+  BuyResult,
+} from '@deriv/core';
 import type { ContractMode, TradeType, DigitStats } from '../lib/types';
 
 const DIGIT_TRADE_TYPE_OPTIONS: { value: TradeType; label: string }[] = [
@@ -20,6 +28,7 @@ const DIGIT_TRADE_TYPE_OPTIONS: { value: TradeType; label: string }[] = [
 ];
 
 export interface DigitsViewProps {
+  // Auth
   authState: AuthState;
   accounts: DerivAccount[];
   activeAccount: DerivAccount | null;
@@ -27,9 +36,13 @@ export interface DigitsViewProps {
   onSignUp: () => Promise<void>;
   onLogout: () => void;
   onSwitchAccount: (accountId: string) => Promise<void>;
+
+  // Connection / loading
   isConnected: boolean;
   isLoading: boolean;
   error: string | null;
+
+  // Market data
   symbols: ActiveSymbol[];
   activeSymbol: ActiveSymbol | null;
   selectSymbol: (symbol: string) => void;
@@ -37,6 +50,8 @@ export interface DigitsViewProps {
   lastDigit: number | null;
   digitStats: DigitStats;
   pipSize: number;
+
+  // Trade controls
   tradeType: TradeType;
   setTradeType: (type: TradeType) => void;
   contractMode: ContractMode;
@@ -55,12 +70,51 @@ export interface DigitsViewProps {
   buyResult: BuyResult | null;
   buyError: string | null;
   clearBuyResult: () => void;
+  // Branding (used by preview route; no-op in the real app)
   logoSrc?: string;
   appName?: string;
 }
 
-export function DigitsView(props: DigitsViewProps) {
-  if (props.error) {
+export function DigitsView({
+  authState,
+  accounts,
+  activeAccount,
+  onLogin,
+  onSignUp,
+  onLogout,
+  onSwitchAccount,
+  isConnected,
+  isLoading,
+  error,
+  symbols,
+  activeSymbol,
+  selectSymbol,
+  currentTick,
+  lastDigit,
+  digitStats,
+  pipSize,
+  tradeType,
+  setTradeType,
+  contractMode,
+  setContractMode,
+  selectedDigit,
+  setSelectedDigit,
+  stake,
+  setStake,
+  duration,
+  setDuration,
+  durationLimits,
+  proposal,
+  isProposalLoading,
+  buyContract,
+  isBuying,
+  buyResult,
+  buyError,
+  clearBuyResult,
+  logoSrc,
+  appName,
+}: DigitsViewProps) {
+  if (error) {
     return (
       <main className="flex flex-col bg-background items-center justify-center px-4 min-h-dvh">
         <Card className="max-w-md w-full">
@@ -68,130 +122,109 @@ export function DigitsView(props: DigitsViewProps) {
             <CardTitle className="text-destructive">Connection Error</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground">{props.error}</p>
+            <p className="text-sm text-muted-foreground">{error}</p>
           </CardContent>
         </Card>
       </main>
     );
   }
 
-  // Pure mathematical safe scanner calculation to handle live layout rendering
-  let scannerMessage = "📊 Market pattern stable. Scanning live volatility ticks...";
-  if (props.digitStats && props.digitStats.percentages) {
-    const percentages = props.digitStats.percentages;
-    const highest = Math.max(...percentages);
-    const lowest = Math.min(...percentages);
-    const hotIdx = percentages.indexOf(highest);
-    const coldIdx = percentages.indexOf(lowest);
-    
-    if (highest > 18) {
-      scannerMessage = `⚠️ AI ALERT: Digit ${hotIdx} is over-represented (${highest.toFixed(1)}%). Recommended: DIFFERS.`;
-    } else if (lowest < 4) {
-      scannerMessage = `⚠️ AI ALERT: Digit ${coldIdx} is under-represented (${lowest.toFixed(1)}%). Recommended: MATCHES.`;
-    }
-  }
-
   return (
     <main className="flex flex-col bg-background max-lg:h-dvh max-lg:overflow-y-auto lg:overflow-visible">
       <Header
-        authState={props.authState}
-        accounts={props.accounts}
-        activeAccount={props.activeAccount}
-        onLogin={props.onLogin}
-        onSignUp={props.onSignUp}
-        onLogout={props.onLogout}
-        onSwitchAccount={props.onSwitchAccount}
-        logoSrc={props.logoSrc}
-        appName={props.appName}
+        authState={authState}
+        accounts={accounts}
+        activeAccount={activeAccount}
+        onLogin={onLogin}
+        onSignUp={onSignUp}
+        onLogout={onLogout}
+        onSwitchAccount={onSwitchAccount}
+        logoSrc={logoSrc}
+        appName={appName}
         actions={<ThemeToggle />}
       />
 
-      <div className={props.authState === 'authenticated' ? 'h-[76px] shrink-0' : 'h-[66px] shrink-0'} />
+      {/* Spacer to push content below fixed header */}
+      <div className={authState === 'authenticated' ? 'h-[76px] shrink-0' : 'h-[66px] shrink-0'} />
 
+      {/* Scrollable content area */}
       <div className="flex w-full max-w-7xl mx-auto flex-col px-3 py-2 md:px-6 md:py-4 gap-2 sm:gap-3 lg:flex-none">
-        {props.isLoading ? (
+        {isLoading ? (
           <>
+            {/* Trade type chips skeleton */}
             <div className="flex gap-2">
               <Skeleton className="h-8 w-32 rounded-full" />
               <Skeleton className="h-8 w-28 rounded-full" />
+              <Skeleton className="h-8 w-24 rounded-full" />
             </div>
+            {/* Main card skeleton */}
             <Skeleton className="w-full h-[420px] rounded-xl" />
           </>
         ) : (
           <>
-            <div className="shrink-0 overflow-x-auto pb-0.5">
+            <div className="shrink-0 overflow-x-auto pb-0.5 [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [-ms-overflow-style:none]">
               <TradeTypeChips
-                value={props.tradeType}
+                value={tradeType}
                 options={DIGIT_TRADE_TYPE_OPTIONS}
-                onValueChange={props.setTradeType}
+                onValueChange={setTradeType}
               />
             </div>
 
             <Card className="shrink-0 border shadow-sm mb-12">
-              <CardContent className="flex flex-col p-3 sm:p-6 pb-2">
-                <div className={`lg:grid ${props.tradeType !== 'even-odd' ? 'lg:grid-cols-3' : 'lg:grid-cols-2'}`}>
+              <CardContent className="flex flex-col p-3 sm:p-6 sm:pb-4 pb-2 sm:pb-6">
+                <div className={`lg:grid lg:overflow-visible ${tradeType !== 'even-odd' ? 'lg:grid-cols-3' : 'lg:grid-cols-2'}`}>
                   
-                  {/* Column 1 */}
+                  {/* Column 1: Symbol selector + tick display */}
                   <div className="flex flex-col pb-4 pt-1 sm:pb-6 sm:pt-2 lg:py-0 lg:pr-6">
                     <SymbolSelector
-                      symbols={props.symbols}
-                      activeSymbol={props.activeSymbol}
-                      onSymbolChange={props.selectSymbol}
+                      symbols={symbols}
+                      activeSymbol={activeSymbol}
+                      onSymbolChange={selectSymbol}
                     />
                     <div className="flex items-center justify-center min-h-24 sm:min-h-32 lg:flex-1">
                       <CurrentTickDisplay
-                        tick={props.currentTick}
-                        lastDigit={props.lastDigit}
-                        activeSymbol={props.activeSymbol}
-                        pipSize={props.pipSize}
+                        tick={currentTick}
+                        lastDigit={lastDigit}
+                        activeSymbol={activeSymbol}
+                        pipSize={pipSize}
                       />
                     </div>
-
-                    {/* LIVE INLINE SCANNER COMPONENT */}
-                    <div className="mt-4 p-3 bg-gray-900 border border-gray-800 border-l-4 border-l-blue-500 rounded-lg text-gray-200">
-                      <div className="flex justify-between items-center mb-1">
-                        <span className="font-bold text-xs text-blue-400 tracking-wider">🤖 CLYDEX AI SCANNER</span>
-                        <span className="text-emerald-500 text-xs flex items-center gap-1">
-                          <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>LIVE
-                        </span>
-                      </div>
-                      <p className="m-0 text-sm font-medium text-gray-300">{scannerMessage}</p>
-                    </div>
-
                   </div>
 
-                  {/* Columns 2 & 3 */}
+                  {/* Columns 2+3 wrapper */}
                   <div className="max-lg:border-t max-lg:divide-y divide-border lg:contents">
-                    {props.tradeType !== 'even-odd' && (
+                    {/* Column 2: Digit stats */}
+                    {tradeType !== 'even-odd' && (
                       <div className="py-4 sm:py-6 lg:py-0 lg:px-6 lg:border-l lg:border-r">
                         <DigitStatsBar
-                          digitStats={props.digitStats}
-                          selectedDigit={props.selectedDigit}
-                          onDigitSelect={props.setSelectedDigit}
+                          digitStats={digitStats}
+                          selectedDigit={selectedDigit}
+                          onDigitSelect={setSelectedDigit}
                         />
                       </div>
                     )}
 
+                    {/* Column 3: Trade controls */}
                     <div className="pt-4 sm:pt-6 lg:pt-0 lg:pl-6 lg:border-l lg:border-none">
                       <TradeControls
-                        tradeType={props.tradeType}
-                        contractMode={props.contractMode}
-                        onContractModeChange={props.setContractMode}
-                        selectedDigit={props.selectedDigit}
-                        isConnected={props.isConnected}
-                        stake={props.stake}
-                        onStakeChange={props.setStake}
-                        duration={props.duration}
-                        onDurationChange={props.setDuration}
-                        durationLimits={props.durationLimits}
-                        proposal={props.proposal}
-                        isProposalLoading={props.isProposalLoading}
-                        onBuy={props.buyContract}
-                        isBuying={props.isBuying}
-                        buyResult={props.buyResult}
-                        buyError={props.buyError}
-                        onClearBuyResult={props.clearBuyResult}
-                        isAuthenticated={props.authState === 'authenticated'}
+                        tradeType={tradeType}
+                        contractMode={contractMode}
+                        onContractModeChange={setContractMode}
+                        selectedDigit={selectedDigit}
+                        isConnected={isConnected}
+                        stake={stake}
+                        onStakeChange={setStake}
+                        duration={duration}
+                        onDurationChange={setDuration}
+                        durationLimits={durationLimits}
+                        proposal={proposal}
+                        isProposalLoading={isProposalLoading}
+                        onBuy={buyContract}
+                        isBuying={isBuying}
+                        buyResult={buyResult}
+                        buyError={buyError}
+                        onClearBuyResult={clearBuyResult}
+                        isAuthenticated={authState === 'authenticated'}
                       />
                     </div>
                   </div>
@@ -207,5 +240,4 @@ export function DigitsView(props: DigitsViewProps) {
       </div>
     </main>
   );
-  }
-  
+}
