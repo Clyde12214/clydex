@@ -57,3 +57,24 @@ export function updateDigitStats(
   }
   return updated;
 }
+export function runClydexAiScanner(prices: number[], pipSize: number): string {
+  if (prices.length < 5) return "Analyzing market patterns...";
+
+  // Get the last 5 digits from the recent prices
+  const lastFivePrices = prices.slice(-5);
+  const lastFiveDigits = lastFivePrices.map(price => getLastDigit(price, pipSize));
+
+  // Check if they are all even numbers
+  const allEven = lastFiveDigits.every(digit => digit % 2 === 0);
+  // Check if they are all odd numbers
+  const allOdd = lastFiveDigits.every(digit => digit % 2 !== 0);
+
+  if (allEven) {
+    return "🤖 AI ALERT: 5 EVENS IN A ROW DETECTED! Statistically, an ODD number is coming.";
+  }
+  if (allOdd) {
+    return "🤖 AI ALERT: 5 ODDS IN A ROW DETECTED! Statistically, an EVEN number is coming.";
+  }
+
+  return "📊 Market running normal. Scanning ticks...";
+}
