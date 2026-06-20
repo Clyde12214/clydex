@@ -2,7 +2,7 @@ import type { DigitStats } from './types';
 
 /**
  * Derive the number of decimal places from a pip value.
- * E.g., 0.01 → 2, 0.001 → 3, 1 → 0
+ * E.g., 0.01 -> 2, 0.001 -> 3, 1 -> 0
  */
 export function pipSizeFromPip(pip: number): number {
   if (pip >= 1) return 0;
@@ -14,8 +14,6 @@ export function pipSizeFromPip(pip: number): number {
 
 /**
  * Extract the last digit from a price value.
- * Uses pipSize (number of decimal places) to correctly format the price,
- * since JS drops trailing zeros (e.g., 876.50 → "876.5").
  */
 export function getLastDigit(price: number, pipSize: number): number {
   const priceStr = price.toFixed(pipSize);
@@ -44,37 +42,43 @@ export function computeDigitStats(prices: number[], pipSize: number): DigitStats
 
 /**
  * Update digit stats incrementally when a new tick arrives.
- * Maintains a sliding window of the last `windowSize` ticks.
  */
-export function updateDigitStats(
-  prices: number[],
-  newPrice: number,
-  windowSize: number
-): number[] {
+export function updateDigitStats({
+  prices,
+  newPrice,
+  windowSize,
+}: {
+  prices: number[];
+  newPrice: number;
+  windowSize: number;
+}): number[] {
   const updated = [...prices, newPrice];
   if (updated.length > windowSize) {
     updated.shift();
   }
   return updated;
 }
-export function runClydexAiScanner(prices: number[], pipSize: number): string {
-  if (prices.length < 5) return "Analyzing market patterns...";
 
-  // Get the last 5 digits from the recent prices
-  const lastFivePrices = prices.slice(-5);
-  const lastFiveDigits = lastFivePrices.map(price => getLastDigit(price, pipSize));
-
-  // Check if they are all even numbers
-  const allEven = lastFiveDigits.every(digit => digit % 2 === 0);
-  // Check if they are all odd numbers
-  const allOdd = lastFiveDigits.every(digit => digit % 2 !== 0);
-
-  if (allEven) {
-    return "🤖 AI ALERT: 5 EVENS IN A ROW DETECTED! Statistically, an ODD number is coming.";
-  }
-  if (allOdd) {
-    return "🤖 AI ALERT: 5 ODDS IN A ROW DETECTED! Statistically, an EVEN number is coming.";
+/**
+ * Analyzes past tick data to discover consecutive patterns.
+ */
+export function runClydexAiScanner(currentTick: any, digitStats: DigitStats): string {
+  if (!currentTick || !digitStats || digitStats.totalTicks < 10) {
+    return "📊 Market initializing. Analyzing tick streams...";
   }
 
-  return "📊 Market running normal. Scanning ticks...";
+  // Look for extreme percentage imbalances as a fallback indicator
+  const highestPercentage = Math.max(...digitStats.percentages);
+  const lowestPercentage = Math.min(...digitStats.percentages);
+  const hotDigit = digitStats.percentages.indexOf(highestPercentage);
+  const coldDigit = digitStats.percentages.indexOf(lowestPercentage);
+
+  if (highestPercentage > 18) {
+    return `⚠️ AI BREAKOUT: Digit ${hotDigit} is heavily over-represented (${highestPercentage.toFixed(1)}%). Consider DIFFERS trade.`;
+  }
+  if (lowestPercentage < 4) {
+    return `⚠️ AI BREAKOUT: Digit ${coldDigit} is heavily under-represented (${lowestPercentage.toFixed(1)}%). Consider MATCHES trade.`;
+  }
+
+  return "📊 Market pattern stable. Scanning live volatility ticks...";
 }
