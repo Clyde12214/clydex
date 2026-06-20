@@ -20,6 +20,8 @@ import type {
   BuyResult,
 } from '@deriv/core';
 import type { ContractMode, TradeType, DigitStats } from '../lib/types';
+import { runClydexAiScanner } from '../lib/digit-stats';
+
 
 const DIGIT_TRADE_TYPE_OPTIONS: { value: TradeType; label: string }[] = [
   { value: 'matches-differs', label: 'Matches/Differs' },
@@ -189,6 +191,23 @@ export function DigitsView({
                         pipSize={pipSize}
                       />
                     </div>
+                            {/* CLYDEX LIVE AI SCANNER DISPLAY */}
+        <div className="mt-4 p-3 bg-gray-900 border border-gray-800 border-l-4 border-l-blue-500 rounded-lg text-gray-200">
+          <div className="flex justify-between items-center mb-1">
+            <span className="font-bold text-xs text-blue-400 tracking-wider">
+              🤖 CLYDEX AI SCANNER
+            </span>
+            <span className="text-emerald-500 text-xs flex items-center gap-1">
+              <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+              LIVE
+            </span>
+          </div>
+          {props.prices ? runClydexAiScanner(props.prices, props.pipSize) : "Waiting for tick stream..."}
+    
+            {tick ? "Scanning market patterns on Volatility indices..." : "Waiting for stream connection..."}
+          </p>
+        </div>
+                    
                   </div>
 
                   {/* Columns 2+3 wrapper: stacked on mobile, transparent on desktop */}
