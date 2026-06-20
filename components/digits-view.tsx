@@ -22,8 +22,6 @@ import type {
 import type { ContractMode, TradeType, DigitStats } from '../lib/types';
 import { runClydexAiScanner } from '../lib/digit-stats';
 
-
-
 const DIGIT_TRADE_TYPE_OPTIONS: { value: TradeType; label: string }[] = [
   { value: 'matches-differs', label: 'Matches/Differs' },
   { value: 'over-under', label: 'Over/Under' },
@@ -35,7 +33,7 @@ export interface DigitsViewProps {
   authState: AuthState;
   accounts: DerivAccount[];
   activeAccount: DerivAccount | null;
-  onLogin: () => Promise<void>;
+  onLogin: () => void;
   onSignUp: () => Promise<void>;
   onLogout: () => void;
   onSwitchAccount: (accountId: string) => Promise<void>;
@@ -146,11 +144,12 @@ export function DigitsView({
         appName={appName}
         actions={<ThemeToggle />}
       />
-      {/* Spacer to push content below fixed header — taller when authenticated (account bar visible) */}
+
+      {/* Spacer to push content below fixed header */}
       <div className={authState === 'authenticated' ? 'h-[76px] shrink-0' : 'h-[66px] shrink-0'} />
 
-      {/* Scrollable content area — sits between header and sticky buy bar on mobile */}
-      <div className="flex w-full max-w-7xl mx-auto flex-col px-3 py-2 sm:px-4 sm:py-4 gap-2 sm:gap-3 lg:flex-none lg:overflow-visible pb-10">
+      {/* Scrollable content area */}
+      <div className="flex w-full max-w-7xl mx-auto flex-col px-3 py-2 md:px-6 md:py-4 gap-2 sm:gap-3 lg:flex-none lg:o">
         {isLoading ? (
           <>
             {/* Trade type chips skeleton */}
@@ -164,7 +163,7 @@ export function DigitsView({
           </>
         ) : (
           <>
-            <div className="shrink-0 overflow-x-auto pb-0.5 [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+            <div className="shrink-0 overflow-x-auto pb-0.5 [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [-ms-overflow-style:none]">
               <TradeTypeChips
                 value={tradeType}
                 options={DIGIT_TRADE_TYPE_OPTIONS}
@@ -173,10 +172,9 @@ export function DigitsView({
             </div>
 
             <Card className="shrink-0 border shadow-sm mb-12">
-              <CardContent className="flex flex-col p-3 pt-3 sm:p-6 sm:pt-4 pb-2 sm:pb-6">
-                <div
-                  className={`lg:grid lg:overflow-visible ${tradeType !== 'even-odd' ? 'lg:grid-cols-3' : 'lg:grid-cols-2'}`}
-                >
+              <CardContent className="flex flex-col p-3 sm:p-6 sm:pb-4 pb-2 sm:pb-6">
+                <div className={`lg:grid lg:overflow-visible ${tradeType !== 'even-odd' ? 'lg:grid-cols-3' : 'lg:grid-cols-2'}`}>
+                  
                   {/* Column 1: Symbol selector + tick display */}
                   <div className="flex flex-col pb-4 pt-1 sm:pb-6 sm:pt-2 lg:py-0 lg:pr-6">
                     <SymbolSelector
@@ -192,31 +190,30 @@ export function DigitsView({
                         pipSize={pipSize}
                       />
                     </div>
-                            {/* CLYDEX LIVE AI SCANNER DISPLAY */}
-        <div className="mt-4 p-3 bg-gray-900 border border-gray-800 border-l-4 border-l-blue-500 rounded-lg text-gray-200">
-          <div className="flex justify-between items-center mb-1">
-            <span className="font-bold text-xs text-blue-400 tracking-wider">
-              🤖 CLYDEX AI SCANNER
-            </span>
-            <span className="text-emerald-500 text-xs flex items-center gap-1">
-              <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
-              LIVE
-            </span>
-          </div>
-          
-    {tick ? "Scanning market patterns..." : "Waiting for tick stream..."}
-          
-            {tick ? "Scanning market patterns on Volatility indices..." : "Waiting for stream connection..."}
-          </p>
-        </div>
-                    
+
+                    {/* CLYDEX LIVE AI SCANNER DISPLAY CONTAINER */}
+                    <div className="mt-4 p-3 bg-gray-900 border border-gray-800 border-l-4 border-l-blue-500 rounded-lg text-gray-200">
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="font-bold text-xs text-blue-400 tracking-wider">
+                          🤖 CLYDEX AI SCANNER
+                        </span>
+                        <span className="text-emerald-500 text-xs flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                          LIVE
+                        </span>
+                      </div>
+                      <p className="m-0 text-sm font-medium text-gray-300">
+                        {runClydexAiScanner(currentTick, digitStats)}
+                      </p>
+                    </div>
+
                   </div>
 
-                  {/* Columns 2+3 wrapper: stacked on mobile, transparent on desktop */}
+                  {/* Columns 2+3 wrapper */}
                   <div className="max-lg:border-t max-lg:divide-y divide-border lg:contents">
-                    {/* Column 2: Digit stats — hidden for Even/Odd */}
+                    {/* Column 2: Digit stats */}
                     {tradeType !== 'even-odd' && (
-                      <div className="py-4 sm:py-6 lg:py-0 lg:px-6 lg:border-l lg:border-border">
+                      <div className="py-4 sm:py-6 lg:py-0 lg:px-6 lg:border-l lg:border-r">
                         <DigitStatsBar
                           digitStats={digitStats}
                           selectedDigit={selectedDigit}
@@ -226,7 +223,7 @@ export function DigitsView({
                     )}
 
                     {/* Column 3: Trade controls */}
-                    <div className="pt-4 sm:pt-6 lg:pt-0 lg:pl-6 lg:border-l lg:border-border">
+                    <div className="pt-4 sm:pt-6 lg:pt-0 lg:pl-6 lg:border-l lg:border-none">
                       <TradeControls
                         tradeType={tradeType}
                         contractMode={contractMode}
@@ -249,17 +246,17 @@ export function DigitsView({
                       />
                     </div>
                   </div>
+
                 </div>
               </CardContent>
             </Card>
           </>
         )}
       </div>
-
-      {/* Fixed footer */}
       <div className="fixed bottom-0 left-0 right-0 py-2 text-center bg-background/80 backdrop-blur-sm">
         <Footer />
       </div>
     </main>
   );
-}
+            }
+                      
