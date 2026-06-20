@@ -23,6 +23,7 @@ import type { ContractMode, TradeType, DigitStats } from '../lib/types';
 import { runClydexAiScanner } from '../lib/digit-stats';
 
 
+
 const DIGIT_TRADE_TYPE_OPTIONS: { value: TradeType; label: string }[] = [
   { value: 'matches-differs', label: 'Matches/Differs' },
   { value: 'over-under', label: 'Over/Under' },
@@ -202,8 +203,9 @@ export function DigitsView({
               LIVE
             </span>
           </div>
-          {props.prices ? runClydexAiScanner(props.prices, props.pipSize) : "Waiting for tick stream..."}
-    
+          
+    {tick ? "Scanning market patterns..." : "Waiting for tick stream..."}
+          
             {tick ? "Scanning market patterns on Volatility indices..." : "Waiting for stream connection..."}
           </p>
         </div>
